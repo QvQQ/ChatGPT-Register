@@ -1,0 +1,8 @@
+selenium
+undetected_chromedriver
+requests
+rich
+sqlalchemy
+petname
+retry
+pyyaml

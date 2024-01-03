@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  chatgpt-register:
+    image: leviosa/chatgpt-register:1.0
+    container_name: ChatGPT-Register
+    restart: unless-stopped
+    volumes:
+      - ./config.yaml:/app/config.yaml
+      - ./account.db:/app/account.db
+
