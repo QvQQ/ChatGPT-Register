@@ -1,8 +1,14 @@
 # ChatGPT-Register
 
-<img src="images/logo.png" alt="ChatGPT-Register Logo" style="zoom:25%;" />
+<div align="center">
+   <img src="images/logo.png" alt="ChatGPT-Register Logo" width="280" height="auto" />
+</div>
 
-**ChatGPT-Register** 是一个自动化工具，用于无人工干预地注册 ChatGPT 账号。结合[PandoraNext](https://docs.pandoranext.com/zh-CN)项目和[Capsolver](https://www.capsolver.com/zh)，它实现了一个高效的注册流程。
+<br/>
+
+**ChatGPT-Register** 是一个自动化工具，用于无人工干预地注册 ChatGPT 账号。
+结合[PandoraNext](https://docs.pandoranext.com/zh-CN)项目和[Capsolver](https://www.capsolver.com/zh)，它实现了一个高效的注册流程。
+完全模拟整个注册流程，在安全无风险的基础上，单个实例注册用时仅需 2min！
 
 ## 特点
 
@@ -82,14 +88,18 @@ puzzle_type: "train_coordinates"
 ## 使用示例
 
 - 注册过程的日志截图：
-  ![注册过程日志](images/sample_log.png)
+  
+  <img src="images/sample_log.png" alt="注册过程日志" width="750" height="auto" />
+
 - 数据库中的账号截图：
-  ![数据库账号截图](images/sample_database.png)
+  
+  <img src="images/sample_database.png" alt="数据库账号截图" width="750" height="auto" />
 
 ## 加入我们
 
 欢迎加入微信群，获取更多信息和支持：
-<img src="images/wechat_group.png" alt="微信群二维码" style="zoom:33%;" />
+
+<img src="images/wechat_group.png" alt="微信群二维码" width="300" height="auto" />
 
 ## 贡献
 
