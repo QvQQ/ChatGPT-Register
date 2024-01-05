@@ -7,7 +7,9 @@
 <br/>
 
 **ChatGPT-Register** 是一个自动化工具，用于无人工干预地注册 ChatGPT 账号。
+
 结合[PandoraNext](https://docs.pandoranext.com/zh-CN)项目和[Capsolver](https://www.capsolver.com/zh)，它实现了一个高效的注册流程。
+
 完全模拟整个注册流程，在安全无风险的基础上，单个实例注册用时仅需 2min！
 
 ## 特点

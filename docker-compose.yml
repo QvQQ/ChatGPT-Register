@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   chatgpt-register:
-    image: leviosa/chatgpt-register:1.0
+    image: leviosa/chatgpt-register:latest
     container_name: ChatGPT-Register
     restart: unless-stopped
     volumes:
