@@ -4,7 +4,7 @@ from contextlib import contextmanager
 from typing import Optional
 
 from sqlalchemy import create_engine
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError, OperationalError
 from sqlalchemy.orm import sessionmaker
 from sshtunnel import SSHTunnelForwarder, BaseSSHTunnelForwarderError
 
@@ -43,20 +43,21 @@ class PlainSessionMaker:
     @contextmanager
     def db_session(self, database_uri: str = None):
 
-        if database_uri is not None:
-            self.database_uri = database_uri
-            self._create_engine()
-        else:
-            if self.database_uri is None:
-                self.logger.error('Neither the initial database_uri nor the current database_uri exists.')
-                raise ValueError('Neither the initial database_uri nor the current database_uri exists.')
+        try:
+            if database_uri is not None:
+                self.database_uri = database_uri
+                self._create_engine()
+            else:
+                if self.database_uri is None:
+                    self.logger.error('Neither the initial database_uri nor the current database_uri exists.')
+                    raise ValueError('Neither the initial database_uri nor the current database_uri exists.')
 
-        with self.session_maker() as session:
-            try:
+            with self.session_maker() as session:
                 yield session
-            except SQLAlchemyError as e:
-                self.logger.error(f'[bold red]Performing rollback...[/bold red]', exc_info=e)
-                session.rollback()
+
+        except SQLAlchemyError as e:
+            self.logger.error(f'[bold red]SQLAlchemyError occurred![/bold red]', exc_info=e)
+            raise e
 
     def _create_engine(self):
 
@@ -118,16 +119,19 @@ class TunnelledSessionMaker(PlainSessionMaker):
                 # 数据库引擎和会话配置
                 self.database_uri = f'mysql+pymysql://{self.database_user}:{self.database_password}@localhost:{tunnel.local_bind_port}/{self.database_name}'
 
-                # 获取 session_maker
-                self._create_engine()
+                try:
+                    # 获取 session_maker
+                    self._create_engine()
 
-                # 执行数据库操作
-                with self.session_maker() as session:
-                    try:
+                    # 执行数据库操作
+                    with self.session_maker() as session:
                         yield session
-                    except SQLAlchemyError as e:
-                        self.logger.error(f'[bold red]Performing rollback...[/bold red]', exc_info=e)
-                        session.rollback()
+                except SQLAlchemyError as e:
+                    self.logger.error(f'[bold red]SQLAlchemyError occurred![/bold red]', exc_info=e)
+                    raise e
+                except OperationalError as e:
+                    self.logger.error(f'[bold red]OperationalError occurred![/bold red]', exc_info=e)
+                    raise e
 
         except BaseSSHTunnelForwarderError as e:
             self.logger.error(f'[bold red]Tunnel establishment failed![/bold red]', exc_info=e)
