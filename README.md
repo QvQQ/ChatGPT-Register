@@ -22,10 +22,11 @@
 
 ## 安装指南
 
-公共步骤：
+### 公共步骤：
 1. 克隆仓库：
    ```bash
    git clone https://github.com/QvQQ/ChatGPT-Register
+   cd ChatGPT-Register
    ```
 2. 复制并编辑配置文件：
    ```bash
@@ -33,7 +34,7 @@
    # 编辑 config.yaml 文件
    ```
 
-### 方法一：通过本机直接运行
+### 方法一：通过本机直接运行（推荐）
 1. 安装依赖：
    ```bash
    pip install -r requirements.txt
@@ -44,20 +45,25 @@
    ```
 
 ### 方法二：使用Docker Compose
-1. 在项目根目录下运行：
+- 在项目根目录下运行：
    ```bash
    docker compose up
    ```
+    PS. 由于使用了 Selenium 来模拟请求，对主机配置有较高要求。如果报错，可以尝试延长程序中寻找元素的等待时间。
 
 ## 结果存储
 
 注册的结果将被保存在SQLite数据库 `account.db` 中。您可以使用Navicat等软件查看数据库，或修改存储函数将结果存储至txt文件中。欢迎提出Pull Request共同改进项目。
+- **Update 2024.1.5** 现在可以连接远程服务器的数据库了！
 
 ## 配置文件说明
 
 `config_template.yaml` 文件中包含以下配置项：
 
 ```yaml
+# 是否使用 headless 模式(Docker 中应该开启，本地可以关闭测试)
+headless_browser: true
+
 # 注册账号的邮箱后缀，包含`@`
 account_postfix: ""
 

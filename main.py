@@ -608,7 +608,7 @@ class FunCaptchaSolver:
     def start_puzzle(self):
         self.logger.info('Starting puzzle...')
 
-        start_puzzle = self.browser.find_element(By.XPATH, "//button[text()='开始拼图']")
+        start_puzzle = self.helper.sleepy_find_element(By.XPATH, "//button[text()='开始拼图']")
         start_puzzle.click()
 
         self.logger.info('Puzzle started!')
@@ -637,11 +637,11 @@ class FunCaptchaSolver:
         right_arrow = self.browser.find_element(By.XPATH, '//a[@role="button" and contains(@class, "right-arrow")]')
         right_arrow.click()
 
-    @retry(tries=5, delay=1, backoff=2, exceptions=(ValueError,))
+    @retry(tries=5, delay=1, backoff=2, exceptions=(ValueError, AssertionError))
     def get_puzzle_image(self):
 
         # 定位到img元素
-        image_element = self.browser.find_element(By.XPATH, "//div[contains(@class, 'answer-frame')]/div[contains(@class, 'box')]/img")
+        image_element = self.helper.sleepy_find_element(By.XPATH, "//div[contains(@class, 'answer-frame')]/div[contains(@class, 'box')]/img")
 
         # 获取style属性
         style_attribute = image_element.get_attribute("style")
@@ -727,7 +727,7 @@ class SeleniumDriverHelper:
         # 配置日志
         self.logger = logging.getLogger(self.__class__.__name__)
 
-    def sleepy_find_element(self, by, query, attempt_count: int = 20, sleep_duration: int = 1, fail_ok: bool = False):
+    def sleepy_find_element(self, by, query, attempt_count: int = 30, sleep_duration: int = 2, fail_ok: bool = False):
         """
         Finds the web element using the locator and query.
 
@@ -759,7 +759,7 @@ class SeleniumDriverHelper:
             raise Exceptions.NoSuchElementException(f'Element {query} is not found.')
         return item
 
-    def wait_until_disappear(self, by, query, timeout_duration=15):
+    def wait_until_disappear(self, by, query, timeout_duration=35):
         """
         Waits until the specified web element disappears from the page.
 
@@ -789,7 +789,7 @@ class SeleniumDriverHelper:
             raise
         return
 
-    def wait_until_appear(self, by, query, timeout_duration=15):
+    def wait_until_appear(self, by, query, timeout_duration=35):
         """
         Waits until the specified web element appears on the page.
 
@@ -874,6 +874,7 @@ if __name__ == '__main__':
         exit(-1)
 
     # 从配置字典中获取值
+    headless_browser = config.get('headless_browser', True)
     account_postfix = config.get('account_postfix')
     client_key = config.get('client_key')
     pandora_next_website = config.get('pandora_next_website')
@@ -897,7 +898,7 @@ if __name__ == '__main__':
     register = Register(
         pandora_next_website=pandora_next_website,
         client_key=client_key,
-        headless=True
+        headless=headless_browser
     )
 
     # 跳过 site_password
@@ -959,5 +960,6 @@ if __name__ == '__main__':
     time.sleep(10)
 
     # 关闭
+    register.browser.close()
     register.browser.quit()
 
