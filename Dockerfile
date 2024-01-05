@@ -36,10 +36,10 @@ deb https://security.debian.org/debian-security bookworm-security main contrib\n
     && rm -rf /var/lib/apt/lists/*
 
 # 复制程序文件到工作目录
-COPY ./main.py ./database.py ./models.py /app
+COPY ./main.py ./database.py ./models.py /app/
 
 # 安装Python依赖
-RUN pip install --no-cache-dir selenium undetected_chromedriver requests rich sqlalchemy petname retry pyyaml
+RUN pip install --no-cache-dir undetected_chromedriver requests rich sqlalchemy petname retry pyyaml sshtunnel
 
 # 运行 undetected_chromedriver 的 Patcher 自动下载 Chromedriver
 RUN python -c "from undetected_chromedriver import Patcher; import logging; logging.basicConfig(level='DEBUG'); Patcher().auto()"

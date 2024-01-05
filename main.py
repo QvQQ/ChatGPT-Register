@@ -20,7 +20,7 @@ from rich.console import Console
 from rich.logging import RichHandler
 
 # for database
-from database import Session, init_db
+from database import get_session_maker
 from models import Account
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -43,7 +43,7 @@ import yaml
 
 # ------------------------------------------------------------------------------------
 # 初始化数据库（创建表）
-init_db()
+DB_Session = get_session_maker('sqlite:///account.db')
 
 # ------------------------------------------------------------------------------------
 # 创建一个Rich的Console对象
@@ -346,7 +346,7 @@ class Register:
 
     def check_account_exists(self, email) -> bool:
         """检查指定email的账号是否存在"""
-        with Session() as session:
+        with DB_Session() as session:
             try:
                 account = session.query(Account).filter_by(email=email).first()
                 if account:
@@ -366,7 +366,7 @@ class Register:
 
         new_account = Account(email=email, password=password, is_active=1)
 
-        with Session() as session:
+        with DB_Session() as session:
             try:
                 session.add(new_account)
                 session.commit()
@@ -689,7 +689,7 @@ class FunCaptchaSolver:
                 return index
         return None
 
-    @retry(tries=5, delay=1, backoff=2, exceptions=(RequestException, json.JSONDecodeError, ValueError))
+    @retry(tries=5, delay=1, backoff=2, exceptions=(RequestException, json.JSONDecodeError, ValueError, KeyError))
     def solve_puzzle(self, question_type: str, base64_str: str):
         self.logger.info(f'Solving puzzle...')
 
