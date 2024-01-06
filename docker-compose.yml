@@ -5,6 +5,8 @@ services:
     image: leviosa/chatgpt-register:latest
     container_name: ChatGPT-Register
     restart: unless-stopped
+    ports:
+      - "7900:7900"  # noVNC
     volumes:
       - ./config.yaml:/app/config.yaml
       - ./account.db:/app/account.db

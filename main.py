@@ -119,12 +119,12 @@ class Register:
             options=options,
             headless=headless
         )
+        self.browser.set_page_load_timeout(120)
 
-        if not headless:
-            self.browser.set_window_position(0, 0)  # 设置窗口位置
-            self.browser.set_window_size(700, 900)  # 设置窗口大小
+        # if not headless:
+        self.browser.set_window_position(0, 0)  # 设置窗口位置
+        self.browser.set_window_size(700, 900)  # 设置窗口大小
 
-        self.browser.set_page_load_timeout(15)
         self.browser.execute_script(
             f"window.localStorage.setItem('oai/apps/hasSeenOnboarding/chat', {datetime.today().strftime('%Y-%m-%d')});"
         )
@@ -637,7 +637,7 @@ class FunCaptchaSolver:
         right_arrow = self.browser.find_element(By.XPATH, '//a[@role="button" and contains(@class, "right-arrow")]')
         right_arrow.click()
 
-    @retry(tries=5, delay=1, backoff=2, exceptions=(ValueError, AssertionError))
+    @retry(tries=5, delay=1, backoff=2, exceptions=(ValueError, AttributeError))
     def get_puzzle_image(self):
 
         # 定位到img元素
@@ -727,7 +727,7 @@ class SeleniumDriverHelper:
         # 配置日志
         self.logger = logging.getLogger(self.__class__.__name__)
 
-    def sleepy_find_element(self, by, query, attempt_count: int = 30, sleep_duration: int = 2, fail_ok: bool = False):
+    def sleepy_find_element(self, by, query, attempt_count: int = 30, sleep_duration: int = 5, fail_ok: bool = False):
         """
         Finds the web element using the locator and query.
 
@@ -759,7 +759,7 @@ class SeleniumDriverHelper:
             raise Exceptions.NoSuchElementException(f'Element {query} is not found.')
         return item
 
-    def wait_until_disappear(self, by, query, timeout_duration=35):
+    def wait_until_disappear(self, by, query, timeout_duration=60):
         """
         Waits until the specified web element disappears from the page.
 
@@ -789,7 +789,7 @@ class SeleniumDriverHelper:
             raise
         return
 
-    def wait_until_appear(self, by, query, timeout_duration=35):
+    def wait_until_appear(self, by, query, timeout_duration=60):
         """
         Waits until the specified web element appears on the page.
 

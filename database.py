@@ -19,13 +19,6 @@ from rich.logging import RichHandler
 # 创建一个Rich的Console对象
 console = Console()
 
-# 配置日志，使用RichHandler
-logging.basicConfig(
-    level="INFO",  # 设置日志级别
-    format="%(message)s",  # 设置日志格式
-    datefmt="%Y/%m/%d %H:%M:%S",  # 设置时间格式
-    handlers=[RichHandler(console=console, show_path=False, rich_tracebacks=False, markup=True)]  # 使用RichHandler
-)
 # ------------------------------------------------------------------------------------
 
 
@@ -143,3 +136,14 @@ def get_session_maker(database_uri):
     Session = sessionmaker(bind=engine)
 
     return Session
+
+
+if __name__ == '__main__':
+
+    # 配置日志，使用RichHandler
+    logging.basicConfig(
+        level="INFO",  # 设置日志级别
+        format="%(message)s",  # 设置日志格式
+        datefmt="%Y/%m/%d %H:%M:%S",  # 设置时间格式
+        handlers=[RichHandler(console=console, show_path=False, rich_tracebacks=False, markup=True)]  # 使用RichHandler
+    )

@@ -1,6 +1,6 @@
 
-# 使用较新的Python基础镜像
-FROM python:3.11-slim
+# 使用 Selenium 的官方基础镜像
+FROM selenium/standalone-chrome
 
 # 作者信息
 LABEL author="QvQQ"
@@ -11,39 +11,49 @@ LABEL version="1.0"
 ARG TARGETPLATFORM
 
 # 设置工作目录
-WORKDIR /app
+WORKDIR /home/seluser/
 
-# 检查目标平台是否为 amd64，如果不是，则退出
-# 创建并写入新的 sources.list，安装 Chrome 浏览器
-RUN if [ "${TARGETPLATFORM}" != "linux/amd64" ]; then \
-        echo "此 Dockerfile 仅支持 amd64 架构的构建。(Chrome 未提供 arm64 版本)"; \
-        exit 1; \
-    fi \
-    && echo "\
-deb https://mirrors.tuna.tsinghua.edu.cn/debian/ bookworm main contrib\n\
-deb https://mirrors.tuna.tsinghua.edu.cn/debian/ bookworm-updates main contrib\n\
-deb https://mirrors.tuna.tsinghua.edu.cn/debian/ bookworm-backports main contrib\n\
-deb https://security.debian.org/debian-security bookworm-security main contrib\n" > /etc/apt/sources.list \
-    && apt-get update \
-    && apt-get install -y wget gnupg \
-    && wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /etc/apt/trusted.gpg.d/google.gpg \
-    && echo "deb [arch={${TARGETPLATFORM#*/}}] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
-    && apt-get update \
-    && apt-get install -y chromium \
-    || (wget "https://dl.google.com/linux/direct/google-chrome-stable_current_${TARGETPLATFORM#*/}.deb" \
-    && dpkg -i "google-chrome-stable_current_${TARGETPLATFORM#*/}.deb" \
-    && rm "google-chrome-stable_current_${TARGETPLATFORM#*/}.deb") \
-    && rm -rf /var/lib/apt/lists/*
+# 切换到 root
+USER seluser
+
+# 更换镜像源并安装语言包、设置 locale 为中文
+RUN echo "\
+deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ jammy main restricted universe multiverse\n\
+deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ jammy-updates main restricted universe multiverse\n\
+deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ jammy-backports main restricted universe multiverse\n\
+deb http://security.ubuntu.com/ubuntu/ jammy-security main restricted universe multiverse" | sudo tee /etc/apt/sources.list \
+    && sudo apt-get update \
+    && sudo apt-get install -y locales \
+    && sudo rm -rf /var/lib/apt/lists/* \
+    && sudo locale-gen zh_CN.UTF-8
+
+RUN sudo apt update && sudo apt install -y expect
+
+ENV LANG zh_CN.UTF-8
+ENV LANGUAGE zh_CN:zh
+ENV LC_ALL zh_CN.UTF-8
+ENV PATH="${PATH}:/home/seluser/.local/bin"
+
+# 安装 pip 并安装 python 依赖
+RUN sudo chown -R seluser:seluser /home/seluser/.local \
+    && curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
+    && python3 get-pip.py \
+    && rm get-pip.py \
+    && pip config set global.index-url 'https://pypi.tuna.tsinghua.edu.cn/simple' \
+    && pip install --no-cache-dir undetected_chromedriver requests rich sqlalchemy petname retry pyyaml sshtunnel
+
+# 更改 superviosr 的运行命令
+RUN sudo sed -i \
+    -e '\|command=bash -c "/opt/bin/start-selenium-standalone.sh;|a environment=DISPLAY=":99.0",TERM="xterm-256color"' \
+    -e 's|command=bash -c "/opt/bin/start-selenium-standalone.sh;|command=bash -c "cd /home/seluser/; sudo -E unbuffer python3 main.py;|' \
+    /etc/supervisor/conf.d/selenium.conf
 
 # 复制程序文件到工作目录
-COPY ./main.py ./database.py ./models.py /app/
-
-# 安装Python依赖
-RUN pip install --no-cache-dir undetected_chromedriver requests rich sqlalchemy petname retry pyyaml sshtunnel
+COPY ./main.py ./database.py ./models.py /home/seluser/
 
 # 运行 undetected_chromedriver 的 Patcher 自动下载 Chromedriver
-RUN python -c "from undetected_chromedriver import Patcher; import logging; logging.basicConfig(level='DEBUG'); Patcher().auto()"
+RUN python3 -c "from undetected_chromedriver import Patcher; import logging; logging.basicConfig(level='DEBUG'); Patcher().auto()"
 
 # 运行 Python 脚本
-CMD ["python", "main.py"]
+CMD ["/opt/bin/entry_point.sh"]
 
