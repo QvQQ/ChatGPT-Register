@@ -928,8 +928,8 @@ if __name__ == '__main__':
 
     count = 0
     while (link := monitor.get_link(email)) is None and count < 15:
-        log.info(f'账号[{email}]认证链接仍不存在，等待中...')
         count += 1
+        log.info(f'账号[{email}]认证链接仍不存在，等待中...({count})')
         time.sleep(3)
 
     if link:
