@@ -51,6 +51,9 @@ class PlainSessionMaker:
         except SQLAlchemyError as e:
             self.logger.error(f'[bold red]SQLAlchemyError occurred![/bold red]', exc_info=e)
             raise e
+        except OperationalError as e:
+            self.logger.error(f'[bold red]OperationalError occurred![/bold red]', exc_info=e)
+            raise e
 
     def _create_engine(self):
 

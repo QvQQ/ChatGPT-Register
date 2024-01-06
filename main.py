@@ -579,7 +579,7 @@ class FunCaptchaSolver:
             self.logger.info('Next puzzle does not appear in 10s.')
             return False
 
-    @retry(tries=5, delay=1, backoff=2, exceptions=(Exceptions.StaleElementReferenceException,))
+    @retry(tries=7, delay=1, backoff=2, exceptions=(Exceptions.StaleElementReferenceException,))
     def get_stage_info(self):
         self.logger.info('Detecting current stage information...')
 
@@ -637,7 +637,7 @@ class FunCaptchaSolver:
         right_arrow = self.browser.find_element(By.XPATH, '//a[@role="button" and contains(@class, "right-arrow")]')
         right_arrow.click()
 
-    @retry(tries=5, delay=1, backoff=2, exceptions=(ValueError, AttributeError))
+    @retry(tries=7, delay=1, backoff=2, exceptions=(ValueError, AttributeError))
     def get_puzzle_image(self):
 
         # 定位到img元素
@@ -926,11 +926,17 @@ if __name__ == '__main__':
     # start to monitor mails
     monitor.start_monitoring()
 
-    while (link := monitor.get_link(email)) is None:
+    count = 0
+    while (link := monitor.get_link(email)) is None and count < 15:
         log.info(f'账号[{email}]认证链接仍不存在，等待中...')
+        count += 1
         time.sleep(3)
 
-    log.info(f'已获取到账号[{email}]的认证链接！')
+    if link:
+        log.info(f'已获取到账号[{email}]的认证链接！')
+    else:
+        log.critical(f'邮箱获取失败！')
+        exit(-1)
 
     # 结束邮件监测
     monitor.end_monitoring()
