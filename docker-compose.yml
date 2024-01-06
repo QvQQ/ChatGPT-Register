@@ -8,6 +8,6 @@ services:
     ports:
       - "7900:7900"  # noVNC
     volumes:
-      - ./config.yaml:/app/config.yaml
-      - ./account.db:/app/account.db
+      - ./config.yaml:/home/seluser/config.yaml
+      - ./account.db:/home/seluser/account.db
 
