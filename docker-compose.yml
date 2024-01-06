@@ -3,6 +3,7 @@ version: '3.8'
 services:
   chatgpt-register:
     image: leviosa/chatgpt-register:latest
+    shm_size: '2g'
     container_name: ChatGPT-Register
     restart: unless-stopped
     ports:
