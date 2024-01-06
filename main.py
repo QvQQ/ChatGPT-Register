@@ -622,7 +622,7 @@ class FunCaptchaSolver:
         self.logger.info('Puzzle submitted!')
 
     def switch_to_position(self, target):
-        self.logger.info('Switching to target position: {target}')
+        self.logger.info(f'Switching to target position: {target}')
 
         while (curr_position := self.find_active_child_index()) != target:
             self.logger.info(f'Current position: {curr_position}, moving...')
