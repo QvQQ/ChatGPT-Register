@@ -1,9 +1,9 @@
 # ChatGPT-Register
 
 <div align="center">
-   <img src="images/logo.png" alt="ChatGPT-Register Logo" width="250" height="auto" />
+   <img src="images/logo.png" alt="ChatGPT-Register Logo" width="200" height="auto" />
    🫷🥹🫸
-   <img height="250" alt="image" src="https://github.com/QvQQ/ChatGPT-Register/assets/35735975/451a9ae5-b0a7-4226-9673-390514619872">
+   <img height="200" alt="image" src="https://github.com/QvQQ/ChatGPT-Register/assets/35735975/451a9ae5-b0a7-4226-9673-390514619872">
 </div>
 
 <br/>
