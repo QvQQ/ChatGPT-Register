@@ -45,11 +45,14 @@
    ```
 
 ### 方法二：使用Docker Compose
-- 在项目根目录下运行：
+1. 在项目根目录下运行：
    ```bash
    docker compose up
    ```
     PS. 由于使用了 Selenium 来模拟请求，对主机配置有较高要求。如果报错，可以尝试延长程序中寻找元素的等待时间。
+
+2. （可选）要查看容器内部的情况，请访问容器内置的 `noVNC` 服务
+   http://localhost:7900/?autoconnect=1&resize=scale&password=secret
 
 ## 结果存储
 
