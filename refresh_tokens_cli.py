@@ -63,7 +63,7 @@ if not pandora_next_base_url:
 def get_access_and_session_token(email, password):
     log.info('Fetching [bold white]access token[/bold white] and [bold white]session token[/bold white]...')
 
-    url = urljoin(pandora_next_base_url, "/api/auth/login")
+    url = urljoin(pandora_next_base_url, "api/auth/login")
 
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded'
@@ -135,7 +135,7 @@ def get_access_and_session_token_ninja(email, password):
 def get_share_token(access_token):
     log.info('Fetching corresponding [bold white]share token[/bold white]...')
 
-    url = urljoin(pandora_next_base_url, "/api/token/register")
+    url = urljoin(pandora_next_base_url, "api/token/register")
 
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded'
@@ -173,7 +173,7 @@ def get_share_token(access_token):
 def refresh_session_token(session_token):
     log.info('Refreshing current [bold white]session token[/bold white]...')
 
-    url = urljoin(pandora_next_base_url, "/api/auth/session")
+    url = urljoin(pandora_next_base_url, "api/auth/session")
 
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded'
@@ -210,7 +210,7 @@ def refresh_pool_token(share_tokens):
         log.error(f'The number of share_tokens must be less than 100! Current: {len(share_tokens)}.')
         return None
 
-    url = urljoin(pandora_next_base_url, "/api/pool/update")
+    url = urljoin(pandora_next_base_url, "api/pool/update")
 
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded'
