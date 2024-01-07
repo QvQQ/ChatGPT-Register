@@ -6,3 +6,4 @@ petname
 retry
 pyyaml
 sshtunnel
+typer
