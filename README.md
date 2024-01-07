@@ -8,19 +8,20 @@
 
 <br/>
 
-**ChatGPT-Register** 是一个自动化工具，用于无人工干预地注册 ChatGPT 账号。
+**ChatGPT-Register** 是一个自动化工具，**免代理**、**不封号**、**无限量**、**无人工干预**地注册 ChatGPT 账号。
 
 结合[PandoraNext](https://docs.pandoranext.com/zh-CN)项目和[Capsolver](https://www.capsolver.com/zh)，它实现了一个高效的注册流程。
 
-完全模拟整个注册流程，在安全无风险的基础上，单个实例注册用时仅需 2min！
+完全模拟整个注册流程，在安全无风险的基础上，单个实例注册用时仅需 2min！且多开情况下，每个实例互不影响。
 
 ## 特点
 
-- 🚀 **自动化注册**：自动完成整个ChatGPT账号注册流程，使用Capsolver来绕过注册中的验证码。
-- 📧 **邮箱监控**：自动监控和处理OpenAI的Verification认证邮件。
-- 🐍 **Python脚本**：使用Python和selenium自动操作，并使用`undetected_chromedriver`防止检测。
-- 🐳 **Docker支持**：通过Docker Compose轻松部署。
-- 📦 **灵活数据存储**：结果保存在SQLite数据库，支持自定义存储。
+- 🚀 **自动化注册**：自动完成整个ChatGPT账号注册流程，使用`Capsolver`来绕过注册中的验证码。
+- 🌐 **免代理**：不用代理池、注册再多也不被ban本机IP。（感谢`PandoraNext`项目的贡献）
+- 📧 **邮箱监控**：自动监控和处理OpenAI的`Verification`认证邮件。
+- 🐍 **Python脚本**：使用`Python`和`selenium`自动操作，并使用`undetected_chromedriver`防止检测。
+- 🐳 **Docker支持**：通过`Docker Compose`轻松部署。
+- 📦 **灵活数据存储**：结果保存在`SQLite`数据库，支持自定义存储。
 
 ## 安装指南
 
@@ -66,10 +67,10 @@
 `config_template.yaml` 文件中包含以下配置项：
 
 ```yaml
-# 是否使用 headless 模式(Docker 中应该开启，本地可以关闭测试)
+# 是否使用 headless 模式(Docker 与本地都可以关闭无头模式进行测试)
 headless_browser: true
 
-# 注册账号的邮箱后缀，包含`@`
+# 所有注册账号的邮箱后缀，包含`@`
 account_postfix: ""
 
 # Capsovler 的 client_key
@@ -85,14 +86,14 @@ site_password: ""
 IMAP_server: "outlook.office365.com"
 IMAP_port: 993
 
-# 邮箱账号与密码
+# 接收认证邮件的邮箱账号与密码
 email_username: ""
 email_password: ""
 
-# 邮箱的收件箱名称（如Outlook的"Inbox"）
+# 接收认证邮件的邮箱收件箱名称（如Outlook的"Inbox"）
 email_folder: "Inbox"
 
-# ChatGPT 使用的 FunCaptcha 类型
+# ChatGPT 使用的 FunCaptcha 类型（不定期会变化，可以在 capsolver 官网查看所有类型）
 puzzle_type: "train_coordinates"
 ```
 
