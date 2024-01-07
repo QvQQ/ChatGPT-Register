@@ -1,11 +1,11 @@
 
 # 是否使用 headless 模式(Docker 中应该开启，本地可以关闭测试)
-headless_browser: true
+headless_browser: false
 
 # 注册账号的邮箱后缀，包含`@`
 account_postfix: ""
 
-# Capsovler 的 client_key
+# Capsolver 的 client_key
 client_key: ""
 
 # PandoraNext 的镜像站网址
@@ -15,18 +15,28 @@ pandora_next_website: "https://chat.oaifree.com"
 # PandoraNext 镜像站的 site_password，如果没有可留空
 site_password: ""
 
-# IMAP 服务器设置(须支持SSL)
+# 接收 OpenAI 认证邮件的邮箱 IMAP 服务器设置(须支持SSL)
 IMAP_server: "outlook.office365.com"
 IMAP_port: 993
 
-# 邮箱的账号与密码
+# 接收 OpenAI 认证邮件的邮箱的账号与密码
 email_username: ""
 email_password: ""
 
-# 邮箱的收件箱名称，一般是 Inbox (对于 Outlook 而言)
+# 接收 OpenAI 认证邮件的邮箱的收件箱名称，一般是 Inbox (对于 Outlook 而言)
 email_folder: "Inbox"
 
 # ChatGPT 使用的 FunCaptcha 的类型
 # 不定期会改变，可以到 Capsovler 网站查看对应类型
 puzzle_type: "train_coordinates"
+
+
+# For refresher_tokens_cli.py
+
+# PandoraNext 镜像站的 baseURL
+# 包括proxy_api_prefix，e.g. https://foo.bar/this_is_proxy_api_prefix/
+pandora_next_base_url: ""
+
+# 要更新的 pool_token，留空则为新生成一个 pool_token
+pandora_next_pool_token: ""
 

@@ -67,39 +67,121 @@
 `config_template.yaml` 文件中包含以下配置项：
 
 ```yaml
-# 是否使用 headless 模式(Docker 与本地都可以关闭无头模式进行测试)
-headless_browser: true
+# 是否使用 headless 模式(Docker 中应该开启，本地可以关闭测试)
+headless_browser: false
 
-# 所有注册账号的邮箱后缀，包含`@`
+# 注册账号的邮箱后缀，包含`@`
 account_postfix: ""
 
-# Capsovler 的 client_key
+# Capsolver 的 client_key
 client_key: ""
 
-# PandoraNext 镜像站网址
+# PandoraNext 的镜像站网址
+# 若没有可以使用 https://chat.oaifree.com
 pandora_next_website: "https://chat.oaifree.com"
 
-# PandoraNext 镜像站的 site_password（如有）
+# PandoraNext 镜像站的 site_password，如果没有可留空
 site_password: ""
 
-# IMAP 服务器设置（须支持SSL）
+# 接收 OpenAI 认证邮件的邮箱 IMAP 服务器设置(须支持SSL)
 IMAP_server: "outlook.office365.com"
 IMAP_port: 993
 
-# 接收认证邮件的邮箱账号与密码
+# 接收 OpenAI 认证邮件的邮箱的账号与密码
 email_username: ""
 email_password: ""
 
-# 接收认证邮件的邮箱收件箱名称（如Outlook的"Inbox"）
+# 接收 OpenAI 认证邮件的邮箱的收件箱名称，一般是 Inbox (对于 Outlook 而言)
 email_folder: "Inbox"
 
-# ChatGPT 使用的 FunCaptcha 类型（不定期会变化，可以在 capsolver 官网查看所有类型）
+# ChatGPT 使用的 FunCaptcha 的类型
+# 不定期会改变，可以到 Capsovler 网站查看对应类型
 puzzle_type: "train_coordinates"
+
+
+# For refresher_tokens_cli.py
+
+# PandoraNext 镜像站的 baseURL
+# 包括proxy_api_prefix，e.g. https://foo.bar/this_is_proxy_api_prefix/
+pandora_next_base_url: ""
+
+# 要更新的 pool_token，留空则为新生成一个 pool_token
+pandora_next_pool_token: ""
 ```
 
 请根据您的需要编辑这些配置项。
 
-## 使用示例
+## `refresh_tokens_cli` 使用说明
+<details>
+  <summary>点击这里展开详细信息</summary>
+
+**Usage**:
+
+```console
+$ refresh_tokens_cli [OPTIONS] COMMAND [ARGS]...
+```
+
+**Options**:
+
+* `--install-completion`: Install completion for the current shell.
+* `--show-completion`: Show completion for the current shell, to copy it or customize the installation.
+* `--help`: Show this message and exit.
+
+**Commands**:
+
+* `assemble`: Assemble pool token
+* `obtain`: Obtain new session tokens if not exists.
+* `refresh`: Refresh tokens.
+
+## `refresh_tokens_cli assemble`
+
+Assemble pool token
+
+**Usage**:
+
+```console
+$ refresh_tokens_cli assemble [OPTIONS]
+```
+
+**Options**:
+
+* `--count INTEGER`: Number of accounts to process  [default: 100]
+* `--help`: Show this message and exit.
+
+## `refresh_tokens_cli obtain`
+
+Obtain new session tokens if not exists.
+
+**Usage**:
+
+```console
+$ refresh_tokens_cli obtain [OPTIONS]
+```
+
+**Options**:
+
+* `--count INTEGER`: Number of accounts to process  [default: 10]
+* `--help`: Show this message and exit.
+
+## `refresh_tokens_cli refresh`
+
+Refresh tokens.
+
+**Usage**:
+
+```console
+$ refresh_tokens_cli refresh [OPTIONS]
+```
+
+**Options**:
+
+* `--empty-tokens / --no-empty-tokens`: Refresh tokens only if share or access token is empty  [default: no-empty-tokens]
+* `--count INTEGER`: Number of accounts to process  [default: -1]
+* `--help`: Show this message and exit.
+
+</details>
+
+## ChatGPT-Register 使用示例
 
 - 注册过程的日志截图：
   

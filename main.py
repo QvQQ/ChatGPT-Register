@@ -38,8 +38,8 @@ import threading
 from retry import retry
 from requests.exceptions import RequestException
 
-# for configuration file reading
-import yaml
+# for configuration
+from configurer import get_configuration
 
 # ------------------------------------------------------------------------------------
 # 初始化数据库（创建表）
@@ -855,23 +855,7 @@ if __name__ == '__main__':
     )
     log = logging.getLogger(__name__)
 
-    # 配置文件路径
-    config_file = './config.yaml'
-
-    try:
-        # 读取 YAML 配置文件
-        with open(config_file, 'r') as file:
-            config = yaml.safe_load(file)
-
-    except FileNotFoundError:
-        # 如果文件不存在，则打印错误信息
-        log.critical(f"配置文件 {config_file} 不存在，请创建该文件。")
-        exit(-1)
-
-    except yaml.YAMLError as exc:
-        # 如果文件存在但格式不正确，则打印错误信息
-        log.critical(f"错误：解析 YAML 文件时发生错误。请检查 {config_file} 的格式。", exc_info=exc)
-        exit(-1)
+    config = get_configuration()
 
     # 从配置字典中获取值
     headless_browser = config.get('headless_browser', True)
