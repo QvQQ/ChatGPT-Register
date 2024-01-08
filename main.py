@@ -76,9 +76,6 @@ class Register:
     xpath_signup_username_input = "//input[@name='username' and @id='username']"
     xpath_signup_username_submit = "//button[@type='submit' and @name='action' and text()='Continue']"
 
-    # 拼图验证环节
-    xpath_puzzle_button = "//button[text()='开始拼图']"
-
     # 注册成功
     xpath_sign_up_successful = "//h1[text()='Signup successful']"
     xpath_go_login = "//a[text()='Go log in']"
@@ -218,43 +215,11 @@ class Register:
 
         self.logger.info('Verify link submitted.')
 
-    def switch_to_puzzle_frame(self):
-        self.logger.info('Switching to puzzle frame...')
-
-        self.browser.switch_to.default_content()
-
-        verification_frame = self.helper.sleepy_find_element(By.XPATH, '//iframe[@title="Verification challenge"]')
-        self.browser.switch_to.frame(verification_frame)
-
-        game_frame = self.helper.sleepy_find_element(By.XPATH, '//iframe[@id="game-core-frame"]')
-        self.browser.switch_to.frame(game_frame)
-
-        self.logger.info('Switched to puzzle frame.')
-
-    def switch_to_default_frame(self):
-        self.logger.info('Switching to default frame...')
-
-        self.browser.switch_to.default_content()
-
-        self.logger.info('Switched to default frame.')
-
     def wait_for_puzzle(self, question_type: str):
-
-        self.switch_to_puzzle_frame()
-
-        self.logger.info('Waiting for puzzle button appears...')
-
-        time.sleep(2)
-        puzzle_button = self.helper.sleepy_find_element(By.XPATH, self.xpath_puzzle_button)
-        puzzle_button.click()
-
-        self.logger.info('Puzzle button clicked.')
 
         self.logger.info('Waiting for puzzle to be solved...')
 
         self.solver.solve(question_type)
-
-        self.switch_to_default_frame()
 
         self.helper.wait_until_appear(By.XPATH, self.xpath_sign_up_successful, timeout_duration=600)
 
@@ -548,6 +513,14 @@ class FunCaptchaSolver:
     def solve(self, question_type: str):
 
         while True:
+            self.logger.info('Waiting for puzzle button appears...')
+            self.switch_to_puzzle_frame()
+
+            puzzle_button = self.helper.sleepy_find_element(By.XPATH, "//button[text()='开始拼图']")
+            puzzle_button.click()
+
+            self.logger.info('Puzzle button clicked.')
+
             previous_stage, (current_stage, total_stage) = None, self.get_stage_info()
 
             for i in range(total_stage):
@@ -564,12 +537,33 @@ class FunCaptchaSolver:
                 self.switch_to_position(solution)
                 self.submit_puzzle()
 
+            # 切回 default_frame
+            self.switch_to_default_frame()
             if not self.try_again():
                 self.logger.info(f'[bold green]Solve successful![/bold green]')
                 break
 
             self.logger.warning(f'Solve failed. Try again!')
 
+    def switch_to_puzzle_frame(self):
+        self.logger.debug('Switching to puzzle frame...')
+
+        self.browser.switch_to.default_content()
+
+        verification_frame = self.helper.sleepy_find_element(By.XPATH, '//iframe[@title="Verification challenge"]')
+        self.browser.switch_to.frame(verification_frame)
+
+        game_frame = self.helper.sleepy_find_element(By.XPATH, '//iframe[@id="game-core-frame"]')
+        self.browser.switch_to.frame(game_frame)
+
+        self.logger.debug('Switched to puzzle frame.')
+
+    def switch_to_default_frame(self):
+        self.logger.debug('Switching to default frame...')
+
+        self.browser.switch_to.default_content()
+
+        self.logger.debug('Switched to default frame.')
 
     def has_next_puzzle(self):
         self.logger.info('Detecting if has next puzzle...')
