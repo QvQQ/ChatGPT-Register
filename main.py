@@ -684,7 +684,7 @@ class FunCaptchaSolver:
 
         return image_data
     
-    def save_base64_image(base64_data, folder='./solved'):
+    def save_base64_image(self, base64_data, folder='./solved'):
 
         try:
             # 确保文件夹存在
