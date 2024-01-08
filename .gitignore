@@ -1,6 +1,7 @@
 
 # custom configuration file
 config.yaml
+solved/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
