@@ -41,6 +41,10 @@ from requests.exceptions import RequestException
 # for configuration
 from configurer import get_configuration
 
+# for solved image saving
+import base64
+import random
+
 # ------------------------------------------------------------------------------------
 # 初始化数据库（创建表）
 DB_Session = get_session_maker('sqlite:///account.db')
@@ -676,7 +680,37 @@ class FunCaptchaSolver:
 
         self.logger.info('Successfully extracted puzzle image data!')
 
+        self.save_base64_image(image_data)
+
         return image_data
+    
+    def save_base64_image(base64_data, folder='./solved'):
+
+        try:
+            # 确保文件夹存在
+            if not os.path.exists(folder):
+                os.makedirs(folder)
+    
+            # 生成文件名：当前时间 + 8位随机字符串
+            current_time = datetime.now().strftime('%Y%m%d%H%M%S')
+            random_str = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+            filename = f"{current_time}_{random_str}.jpg"
+    
+            # 解码Base64图片数据
+            image_data = base64.b64decode(base64_data)
+    
+            # 写入文件
+            with open(os.path.join(folder, filename), 'wb') as file:
+                file.write(image_data)
+    
+            self.logger.info(f"Captcha image saved as {filename}")
+    
+        except base64.binascii.Error:
+            self.logger.info("Error: The provided string is not valid Base64-encoded data.")
+        except IOError as e:
+            self.logger.info(f"IO Error: {e}")
+        except Exception as e:
+            self.logger.info(f"An unexpected error occurred: {e}")
 
     def find_active_child_index(self):
 
