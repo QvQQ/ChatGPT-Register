@@ -579,11 +579,13 @@ class FunCaptchaSolver:
             self.logger.info('Next puzzle does not appear in 10s.')
             return False
 
-    @retry(tries=7, delay=1, backoff=2, exceptions=(Exceptions.StaleElementReferenceException,))
+    @retry(tries=6, delay=2, backoff=2, exceptions=(Exceptions.StaleElementReferenceException,))
     def get_stage_info(self):
         self.logger.info('Detecting current stage information...')
 
         stage_label = self.helper.sleepy_find_element(By.XPATH, "//h2[contains(@class, 'text')]/span[@role='text']")
+        self.logger.info(f'Stage: [yellow]{stage_label.text}[/yellow]')
+
         match = re.search(r"\((\d+)，共 (\d+) 项\)", stage_label.text)
 
         if match:
@@ -596,13 +598,13 @@ class FunCaptchaSolver:
     def try_again(self):
         self.logger.info('Detecting if has try again button...')
 
-        try_again_button = self.helper.sleepy_find_element(By.XPATH, "//button[text()='再次尝试']", attempt_count=5, fail_ok=True)
+        try_again_button = self.helper.sleepy_find_element(By.XPATH, "//button[text()='再次尝试']", attempt_count=15, fail_ok=True)
 
         if try_again_button:
             self.logger.info('Need to try again!')
             return True
         else:
-            self.logger.info('Try again button does not appear in 10s.')
+            self.logger.info('Try again button does not appear in 30s.')
             return False
 
     def start_puzzle(self):
