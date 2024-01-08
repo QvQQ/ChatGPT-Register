@@ -108,6 +108,7 @@ pandora_next_base_url: ""
 # 要更新的 pool_token，留空则为新生成一个 pool_token
 pandora_next_pool_token: ""
 ```
+* **puzzle_type**: 如果在尝试解决验证码时出错，可以用`./solved`中的验证码图片与[Capsolver Documentation](https://docs.capsolver.com/guide/recognition/FunCaptchaClassification.html)中提供的验证码类型进行对比，并填写相应的`Questions`字段即可。
 
 请根据您的需要编辑这些配置项。
 

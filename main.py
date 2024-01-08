@@ -602,13 +602,13 @@ class FunCaptchaSolver:
     def try_again(self):
         self.logger.info('Detecting if has try again button...')
 
-        try_again_button = self.helper.sleepy_find_element(By.XPATH, "//button[text()='再次尝试']", attempt_count=15, fail_ok=True)
+        try_again_button = self.helper.sleepy_find_element(By.XPATH, "//button[text()='再次尝试']", attempt_count=5, fail_ok=True)
 
         if try_again_button:
             self.logger.info('Need to try again!')
             return True
         else:
-            self.logger.info('Try again button does not appear in 30s.')
+            self.logger.info('Try again button does not appear in 10s.')
             return False
 
     def start_puzzle(self):
