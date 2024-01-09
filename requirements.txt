@@ -7,3 +7,4 @@ retry
 pyyaml
 sshtunnel
 typer
+pillow
