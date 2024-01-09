@@ -734,7 +734,8 @@ class FunCaptchaSolver:
 
         payload = {
             "clientKey": self.client_key,
-            "websiteURL": 'https://client-api.arkoselabs.com',
+            "websiteURL": pandora_next_website,
+            "websiteKey": '0655BC92-82E1-43D9-B32E-9DF9B01AF50C',
             "task": {
                 "type": "FunCaptchaClassification",
                 "images": [
