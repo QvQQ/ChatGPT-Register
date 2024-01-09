@@ -285,9 +285,9 @@ class Register:
         ok_lets_go.click()
         self.logger.info('Passed "Okay, let\'s go".')
 
-        get_started = self.helper.sleepy_find_element(By.XPATH, self.xpath_get_started)
-        get_started.click()
-        self.logger.info('Passed "Get started".')
+        # get_started = self.helper.sleepy_find_element(By.XPATH, self.xpath_get_started)
+        # get_started.click()
+        # self.logger.info('Passed "Get started".')
 
     def interact(self, prompt):
 
@@ -515,8 +515,9 @@ class FunCaptchaSolver:
         while True:
             self.logger.info('Waiting for puzzle button appears...')
             self.switch_to_puzzle_frame()
+            time.sleep(2)
 
-            puzzle_button = self.helper.sleepy_find_element(By.XPATH, "//button[text()='开始拼图']")
+            puzzle_button = self.helper.sleepy_find_element(By.XPATH, "//button[text()='开始拼图' or text()='再次尝试']")
             puzzle_button.click()
 
             self.logger.info('Puzzle button clicked.')
@@ -537,10 +538,9 @@ class FunCaptchaSolver:
                 self.switch_to_position(solution)
                 self.submit_puzzle()
 
-            # 切回 default_frame
-            self.switch_to_default_frame()
             if not self.try_again():
                 self.logger.info(f'[bold green]Solve successful![/bold green]')
+                self.switch_to_default_frame()
                 break
 
             self.logger.warning(f'Solve failed. Try again!')
@@ -596,10 +596,17 @@ class FunCaptchaSolver:
     def try_again(self):
         self.logger.info('Detecting if has try again button...')
 
-        try_again_button = self.helper.sleepy_find_element(By.XPATH, "//button[text()='再次尝试']", attempt_count=5, fail_ok=True)
+        # 切回 default_frame
+        self.switch_to_default_frame()
+
+        # 再切回 puzzle_frmae
+        self.switch_to_puzzle_frame()
+
+        try_again_button = self.helper.sleepy_find_element(By.XPATH, "//button[text()='再次尝试']", attempt_count=3, fail_ok=True)
 
         if try_again_button:
             self.logger.info('Need to try again!')
+            #try_again_button.click()
             return True
         else:
             self.logger.info('Try again button does not appear in 10s.')
@@ -625,14 +632,14 @@ class FunCaptchaSolver:
         self.logger.info(f'Switching to target position: {target}')
 
         while (curr_position := self.find_active_child_index()) != target:
-            self.logger.info(f'Current position: {curr_position}, moving...')
+            self.logger.info(f'Current position: {curr_position+1}, moving...')
             self.right_arrow()
             time.sleep(1)
 
         self.logger.info('Switched to target position!')
 
     def right_arrow(self):
-        self.logger.info('Clicking right arrow...')
+        self.logger.debug('Clicking right arrow...')
 
         right_arrow = self.browser.find_element(By.XPATH, '//a[@role="button" and contains(@class, "right-arrow")]')
         right_arrow.click()
@@ -727,6 +734,7 @@ class FunCaptchaSolver:
 
         payload = {
             "clientKey": self.client_key,
+            "websiteURL": 'https://client-api.arkoselabs.com',
             "task": {
                 "type": "FunCaptchaClassification",
                 "images": [
@@ -757,7 +765,7 @@ class SeleniumDriverHelper:
         # 配置日志
         self.logger = logging.getLogger(self.__class__.__name__)
 
-    def sleepy_find_element(self, by, query, attempt_count: int = 30, sleep_duration: int = 5, fail_ok: bool = False):
+    def sleepy_find_element(self, by, query, attempt_count: int = 30, sleep_duration: int = 3, fail_ok: bool = False):
         """
         Finds the web element using the locator and query.
 

@@ -10,7 +10,7 @@
 
 **ChatGPT-Register** 是一个自动化工具，**免代理**、**不封号**、**无限量**、**无人工干预**地注册 ChatGPT 账号。
 
-结合[PandoraNext](https://docs.pandoranext.com/zh-CN)项目和[Capsolver](https://www.capsolver.com/zh)，它实现了一个高效的注册流程。
+结合[PandoraNext](https://docs.pandoranext.com/zh-CN)项目和[Capsolver](https://dashboard.capsolver.com/passport/register?inviteCode=XnJJ1V9nqA0U)，它实现了一个高效的注册流程。
 
 完全模拟整个注册流程，在安全无风险的基础上，单个实例注册用时仅需 2min！且多开情况下，每个实例互不影响。
 
@@ -108,6 +108,7 @@ pandora_next_base_url: ""
 # 要更新的 pool_token，留空则为新生成一个 pool_token
 pandora_next_pool_token: ""
 ```
+* **client_key**: 需要使用Capsolver的服务来解决验证码。新注册用户可以获得1刀额度[[点击注册]](https://dashboard.capsolver.com/passport/register?inviteCode=XnJJ1V9nqA0U)（平均每个账号花费1分多RMB）
 * **puzzle_type**: 如果在尝试解决验证码时出错，可以用`./solved`中的验证码图片与[Capsolver Documentation](https://docs.capsolver.com/guide/recognition/FunCaptchaClassification.html)中提供的验证码类型进行对比，并填写相应的`Questions`字段即可。
 
 请根据您的需要编辑这些配置项。
