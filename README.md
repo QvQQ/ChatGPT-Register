@@ -36,6 +36,7 @@
    cp config_template.yaml config.yaml
    # 编辑 config.yaml 文件
    ```
+3. **根据你的平台类型安装Chrome**（注意，不是Chromium）
 
 ### 方法一：通过本机直接运行（推荐）
 1. 安装依赖：

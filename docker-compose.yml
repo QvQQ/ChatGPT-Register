@@ -11,4 +11,5 @@ services:
     volumes:
       - ./config.yaml:/home/seluser/config.yaml
       - ./account.db:/home/seluser/account.db
+      - ./solved/:/home/seluser/solved/
 

@@ -45,6 +45,11 @@ from configurer import get_configuration
 import base64
 import random
 
+# for challenge
+from PIL import Image
+import io
+from typing import Tuple
+
 # ------------------------------------------------------------------------------------
 # 初始化数据库（创建表）
 DB_Session = get_session_maker('sqlite:///account.db')
@@ -644,6 +649,29 @@ class FunCaptchaSolver:
         right_arrow = self.browser.find_element(By.XPATH, '//a[@role="button" and contains(@class, "right-arrow")]')
         right_arrow.click()
 
+    def get_image_aspect_ratio(self, base64_string: str) -> Tuple[int, int]:
+        """
+        Return the simplest aspect ratio of an image given its base64 encoded string.
+
+        :param base64_string: Base64 encoded string of the image (originally in JPG format).
+        :return: A tuple representing the simplest aspect ratio (width, height).
+        """
+        # Convert base64 string to image
+        image_data = base64.b64decode(base64_string)
+        image = Image.open(io.BytesIO(image_data))
+
+        # Calculate the greatest common divisor for the width and height
+        def gcd(a, b):
+            while b:
+                a, b = b, a % b
+            return a
+
+        width, height = image.size
+        divisor = gcd(width, height)
+
+        # Return the simplest ratio
+        return width // divisor, height // divisor
+
     @retry(tries=7, delay=1, backoff=2, exceptions=(ValueError, AttributeError))
     def get_puzzle_image(self):
 
@@ -734,9 +762,10 @@ class FunCaptchaSolver:
 
         payload = {
             "clientKey": self.client_key,
-            "websiteURL": pandora_next_website,
-            "websiteKey": '0655BC92-82E1-43D9-B32E-9DF9B01AF50C',
+            "appId": "0D62B64B-B22E-4F8E-AA10-08C390CE1103",
             "task": {
+                "websiteURL": pandora_next_website,
+                "websiteKey": '0655BC92-82E1-43D9-B32E-9DF9B01AF50C',
                 "type": "FunCaptchaClassification",
                 "images": [
                     base64_str

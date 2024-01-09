@@ -49,7 +49,7 @@ RUN sudo sed -i \
     /etc/supervisor/conf.d/selenium.conf
 
 # 复制程序文件到工作目录
-COPY ./main.py ./database.py ./models.py /home/seluser/
+COPY ./main.py ./database.py ./models.py ./configurer.py /home/seluser/
 
 # 运行 undetected_chromedriver 的 Patcher 自动下载 Chromedriver
 RUN python3 -c "from undetected_chromedriver import Patcher; import logging; logging.basicConfig(level='DEBUG'); Patcher().auto()"

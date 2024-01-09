@@ -17,6 +17,7 @@ from rich.logging import RichHandler
 # for api
 import requests
 from retry import retry
+import subprocess
 
 # for Typer Cli
 import typer
@@ -59,7 +60,7 @@ if not pandora_next_base_url:
 # ------------------------------------------------------------------------------------
 
 
-@retry(tries=6, delay=1, backoff=2, exceptions=(requests.exceptions.HTTPError,))
+@retry(tries=6, delay=1, backoff=2, exceptions=(requests.exceptions.HTTPError, requests.exceptions.Timeout, requests.exceptions.SSLError))
 def get_access_and_session_token(email, password):
     log.info('Fetching [bold white]access token[/bold white] and [bold white]session token[/bold white]...')
 
@@ -74,7 +75,7 @@ def get_access_and_session_token(email, password):
         'password': password
     }
 
-    res = requests.post(url, headers=headers, data=data)
+    res = requests.post(url, headers=headers, data=data, timeout=(20, 20))
     res.raise_for_status()
 
     json_content = res.json()
@@ -93,7 +94,7 @@ def get_access_and_session_token(email, password):
     return None, None
 
 
-@retry(tries=1, delay=1, backoff=2, exceptions=(requests.exceptions.HTTPError,))
+@retry(tries=10, delay=20, backoff=1, exceptions=(requests.exceptions.HTTPError, requests.exceptions.ConnectionError, requests.exceptions.Timeout, requests.exceptions.SSLError))
 def get_access_and_session_token_ninja(email, password):
     log.info('Fetching [bold white]access token[/bold white] and [bold white]session token[/bold white]...')
 
@@ -109,13 +110,18 @@ def get_access_and_session_token_ninja(email, password):
     }
 
     try:
-        res = requests.post(url, headers=headers, data=data, verify=False)
+        res = requests.post(url, headers=headers, data=data, verify=False, timeout=(20, 20))
         res.raise_for_status()
     except requests.exceptions.HTTPError as http_err:
         log.error(f'HTTP Error. content: {http_err.response.text}')
+        log.error(f'`ninja` restarting...')
+        subprocess.run(f'sudo ./ninja restart -C serve.toml', shell=True)
+        raise
+    except requests.exceptions.ConnectionError as con_err:
         raise
 
     json_content = res.json()
+    res.close()
     if (
         (session_token := json_content.get('session_token')) and
         (access_token := json_content.get('accessToken')) and
@@ -131,7 +137,7 @@ def get_access_and_session_token_ninja(email, password):
     return None, None
 
 
-@retry(tries=6, delay=1, backoff=2, exceptions=(requests.exceptions.HTTPError,))
+@retry(tries=6, delay=1, backoff=2, exceptions=(requests.exceptions.HTTPError, requests.exceptions.Timeout, requests.exceptions.SSLError))
 def get_share_token(access_token):
     log.info('Fetching corresponding [bold white]share token[/bold white]...')
 
@@ -150,7 +156,7 @@ def get_share_token(access_token):
         'show_userinfo': True
     }
 
-    res = requests.post(url, headers=headers, data=data)
+    res = requests.post(url, headers=headers, data=data, timeout=(20, 20))
     res.raise_for_status()
 
     json_content = res.json()
@@ -169,7 +175,7 @@ def get_share_token(access_token):
     return None
 
 
-@retry(tries=6, delay=1, backoff=2, exceptions=(requests.exceptions.HTTPError,))
+@retry(tries=6, delay=1, backoff=2, exceptions=(requests.exceptions.HTTPError, requests.exceptions.Timeout, requests.exceptions.SSLError))
 def refresh_session_token(session_token):
     log.info('Refreshing current [bold white]session token[/bold white]...')
 
@@ -183,7 +189,7 @@ def refresh_session_token(session_token):
         'session_token': session_token
     }
 
-    res = requests.post(url, headers=headers, data=data)
+    res = requests.post(url, headers=headers, data=data, timeout=(20, 20))
     res.raise_for_status()
 
     json_content = res.json()
@@ -202,7 +208,7 @@ def refresh_session_token(session_token):
     return None, None
 
 
-@retry(tries=6, delay=1, backoff=2, exceptions=(requests.exceptions.HTTPError,))
+@retry(tries=6, delay=1, backoff=2, exceptions=(requests.exceptions.HTTPError, requests.exceptions.Timeout, requests.exceptions.SSLError))
 def refresh_pool_token(share_tokens):
     log.info(f'Fetching corresponding [bold white]pool token[/bold white] using {len(share_tokens)} share_tokens...')
 
@@ -221,7 +227,7 @@ def refresh_pool_token(share_tokens):
         'pool_token': pandora_next_pool_token
     }
 
-    res = requests.post(url, headers=headers, data=data)
+    res = requests.post(url, headers=headers, data=data, timeout=(20, 20))
     res.raise_for_status()
 
     # {'count': 30, 'pool_token': 'pk-xxxxxxxxxxxxx'}
