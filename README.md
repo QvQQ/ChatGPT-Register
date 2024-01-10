@@ -121,6 +121,8 @@ pandora_next_pool_token: ""
 请根据您的需要编辑这些配置项。
 
 ## 使用`refresh_tokens_cli` 获取各种 Token、sess key
+<img width="682" alt="image" src="https://github.com/QvQQ/ChatGPT-Register/assets/35735975/7d72d2d8-a4b8-4b98-bf9e-15ab8a7fa3ec">
+
 * 本工具同时支持`Ninja`与`PandoraNext`两种模式。默认为`PandoraNext`，通过添加`--ninja`参数切换为`Ninja`模式。
 * 本工具用来`获取(obtain)`/`刷新(refresh)`当前数据库中账号的
   * **Web**: `session_token`、`access_toekn`、`share_token`
