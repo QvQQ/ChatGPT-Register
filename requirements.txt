@@ -2,9 +2,11 @@ undetected_chromedriver
 requests
 rich
 sqlalchemy
+sqlalchemy_utils
 petname
 retry
 pyyaml
 sshtunnel
 typer
 pillow
+alembic

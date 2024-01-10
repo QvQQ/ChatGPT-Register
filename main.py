@@ -51,13 +51,47 @@ import io
 from typing import Tuple
 
 # ------------------------------------------------------------------------------------
+# 创建一个Rich的Console对象
+console = Console()
+
+# 配置日志，使用RichHandler
+logging.basicConfig(
+    level="INFO",  # 设置日志级别
+    format="%(message)s",  # 设置日志格式
+    datefmt="%Y/%m/%d %H:%M:%S",  # 设置时间格式
+    handlers=[RichHandler(console=console, rich_tracebacks=True, markup=True, show_path=False)]  # 使用RichHandler
+)
+log = logging.getLogger(__name__)
+
+# ------------------------------------------------------------------------------------
 # 初始化数据库（创建表）
 DB_Session = get_session_maker('sqlite:///account.db')
 
 # ------------------------------------------------------------------------------------
-# 创建一个Rich的Console对象
-console = Console()
+# 从配置字典中获取值
+config = get_configuration()
 
+headless_browser = config.get('headless_browser', True)
+account_postfix = config.get('account_postfix')
+client_key = config.get('client_key')
+pandora_next_website = config.get('pandora_next_website')
+site_password = config.get('site_password', '')
+IMAP_server = config.get('IMAP_server')
+IMAP_port = config.get('IMAP_port', 993)
+email_username = config.get('email_username')
+email_password = config.get('email_password')
+email_folder = config.get('email_folder', 'Inbox')
+puzzle_type = config.get('puzzle_type', 'train_coordinates')  # 有多种类型，可在 capsolver 网站查看
+
+if account_postfix and not account_postfix.startswith('@'):
+    account_postfix = '@' + account_postfix
+
+# 检查配置
+if not all(
+        [account_postfix, client_key, pandora_next_website, IMAP_server, email_username, email_password, email_folder,
+         puzzle_type]):
+    log.critical('Please review your environment variable configurations!')
+    exit(-1)
 # ------------------------------------------------------------------------------------
 
 class Register:
@@ -918,38 +952,6 @@ class SeleniumDriverHelper:
 
 
 if __name__ == '__main__':
-
-    # 配置日志，使用RichHandler
-    logging.basicConfig(
-        level="INFO",  # 设置日志级别
-        format="%(message)s",  # 设置日志格式
-        datefmt="%Y/%m/%d %H:%M:%S",  # 设置时间格式
-        handlers=[RichHandler(console=console, rich_tracebacks=True, markup=True, show_path=False)]  # 使用RichHandler
-    )
-    log = logging.getLogger(__name__)
-
-    config = get_configuration()
-
-    # 从配置字典中获取值
-    headless_browser = config.get('headless_browser', True)
-    account_postfix = config.get('account_postfix')
-    client_key = config.get('client_key')
-    pandora_next_website = config.get('pandora_next_website')
-    site_password = config.get('site_password', '')
-    IMAP_server = config.get('IMAP_server')
-    IMAP_port = config.get('IMAP_port', 993)
-    email_username = config.get('email_username')
-    email_password = config.get('email_password')
-    email_folder = config.get('email_folder', 'Inbox')
-    puzzle_type = config.get('puzzle_type', 'train_coordinates')  # 有多种类型，可在 capsolver 网站查看
-
-    if account_postfix and not account_postfix.startswith('@'):
-        account_postfix = '@' + account_postfix
-
-    # 检查配置
-    if not all([account_postfix, client_key, pandora_next_website, IMAP_server, email_username, email_password, email_folder, puzzle_type]):
-        log.critical('Please review your environment variable configurations!')
-        exit(-1)
 
     # 模拟注册类
     register = Register(

@@ -10,6 +10,8 @@
 
 **ChatGPT-Register** 是一个自动化工具，**免代理**、**不封号**、**无限量**、**无人工干预**地注册 ChatGPT 账号。
 
+同时可获取、刷新、维护各类**Token**（包括`sess key`）。一键刷新将过期的Token们！
+
 结合[PandoraNext](https://docs.pandoranext.com/zh-CN)项目和[Capsolver](https://dashboard.capsolver.com/passport/register?inviteCode=XnJJ1V9nqA0U)，它实现了一个高效的注册流程。
 
 完全模拟整个注册流程，在安全无风险的基础上，单个实例注册用时仅需 2min！且多开情况下，每个实例互不影响。
@@ -114,9 +116,29 @@ pandora_next_pool_token: ""
 
 请根据您的需要编辑这些配置项。
 
-## `refresh_tokens_cli` 使用说明
+## 使用`refresh_tokens_cli` 获取各种 Token、sess key
+* 本工具同时支持`Ninja`与`PandoraNext`两种模式。默认为`PandoraNext`，通过添加`--ninja`参数切换为`Ninja`模式。
+* 本工具用来`获取(obtain)`/`刷新(refresh)`当前数据库中账号的
+  * **Web**: `session_token`、`access_toekn`、`share_token`
+  * **Platform**: `refresh_token`、`access_token`、`sess key`
+* 使用示例：
+  * 通过`PandoraNext`获取1000个账号的`session_token`、`access_toekn`、`share_token`
+    ```python
+    python3 refresh_tokens_cli.py obtain --count=1000 --type=web
+    ```
+  * 通过`Ninja`获取所有账号的`refresh_token`、`access_token`、`sess key`
+    ```python
+    python3 refresh_tokens_cli.py obtain --ninja --count=-1 --type=platform
+    ```
+  * 通过`PandoraNext`刷新还剩下5天就过期的所有`session_token`、`access_toekn`、`share_token`
+    ```python
+    python3 refresh_tokens_cli.py refresh --count=-1 --remaining=5 --type=web
+    ```
+  * 以此类推。
+* 使用前请自行配置好`PandoraNext`或`Ninja`环境，并填写进`config.yaml`中。
+
 <details>
-  <summary>点击这里展开详细信息</summary>
+  <summary>点击这里展开详细使用方法</summary>
 
 **Usage**:
 
@@ -126,8 +148,6 @@ $ refresh_tokens_cli [OPTIONS] COMMAND [ARGS]...
 
 **Options**:
 
-* `--install-completion`: Install completion for the current shell.
-* `--show-completion`: Show completion for the current shell, to copy it or customize the installation.
 * `--help`: Show this message and exit.
 
 **Commands**:
@@ -163,7 +183,9 @@ $ refresh_tokens_cli obtain [OPTIONS]
 
 **Options**:
 
-* `--count INTEGER`: Number of accounts to process  [default: 10]
+* `--ninja / --no-ninja`: Use ninja as backend. Default to PandoraNext.  [default: no-ninja]
+* `--type TEXT`: Obtain tokens of web or platform.  [default: web]
+* `--count INTEGER`: Number of accounts to process.  [default: 10]
 * `--help`: Show this message and exit.
 
 ## `refresh_tokens_cli refresh`
@@ -178,10 +200,12 @@ $ refresh_tokens_cli refresh [OPTIONS]
 
 **Options**:
 
-* `--empty-tokens / --no-empty-tokens`: Refresh tokens only if share or access token is empty  [default: no-empty-tokens]
-* `--count INTEGER`: Number of accounts to process  [default: -1]
+* `--ninja / --no-ninja`: Use ninja as backend. Default to PandoraNext.  [default: no-ninja]
+* `--type TEXT`: Obtain tokens of web or platform.  [default: web]
+* `--empty-only / --no-empty-only`: Refresh account only if its [web](share token) or [platform](sess key) is empty.  [default: no-empty-only]
+* `--count INTEGER`: Number of accounts to process.  [default: -1]
+* `--remaining INTEGER`: Number of days remaining until expiration.  [default: 5]
 * `--help`: Show this message and exit.
-
 </details>
 
 ## ChatGPT-Register 使用示例

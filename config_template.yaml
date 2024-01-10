@@ -33,6 +33,9 @@ puzzle_type: "train_coordinates"
 
 # For refresher_tokens_cli.py
 
+# ninja 的 baseURL，e.g. http://localhost:7999
+ninja_base_url: ""
+
 # PandoraNext 镜像站的 baseURL
 # 包括proxy_api_prefix，e.g. https://foo.bar/this_is_proxy_api_prefix/
 pandora_next_base_url: ""

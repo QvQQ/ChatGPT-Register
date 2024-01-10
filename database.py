@@ -6,18 +6,22 @@ from typing import Optional
 from sqlalchemy import create_engine
 from sqlalchemy.exc import SQLAlchemyError, OperationalError
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy_utils import database_exists
+from models import Base  # 导入前面定义的Base
+
 from sshtunnel import SSHTunnelForwarder, BaseSSHTunnelForwarderError
 
-from models import Base  # 导入前面定义的Base
 
 # for log
 import logging
 from rich.console import Console
 from rich.logging import RichHandler
 
-# ------------------------------------------------------------------------------------
-# 创建一个Rich的Console对象
-console = Console()
+# for database upgrade
+import sys
+from alembic.config import Config
+from alembic import command
+from alembic.util.exc import CommandError
 
 # ------------------------------------------------------------------------------------
 
@@ -133,15 +137,56 @@ class TunnelledSessionMaker(PlainSessionMaker):
             self.logger.error(f'[bold red]Tunnel establishment failed![/bold red]', exc_info=e)
             raise e
 
+
+def upgrade_database(alembic_cfg):
+    """
+    运行数据库升级到最新版本
+    """
+    logger = logging.getLogger(__name__)
+    try:
+        # 执行 Alembic 升级
+        command.upgrade(alembic_cfg, 'head')
+
+    except CommandError as e:
+        logger.error(f"Alembic 命令错误: {e}")
+        sys.exit(1)
+    except SQLAlchemyError as e:
+        logger.error(f"SQLAlchemy 数据库错误: {e}")
+        sys.exit(1)
+    except Exception as e:
+        logger.error(f"未预料的错误: {e}")
+        sys.exit(1)
+
+
 def get_session_maker(database_uri):
+
+    # 创建数据库 session_maker
     engine = create_engine(database_uri)
-    Base.metadata.create_all(engine)
     Session = sessionmaker(bind=engine)
+
+    # 设置 SQLAlchmey engine URL
+    alembic_cfg = Config("./alembic.ini")
+    alembic_cfg.set_main_option('sqlalchemy.url', database_uri)
+
+    # 检查是否存在，如果不存在的话，那么创建并标记为最新版
+    if not database_exists(database_uri):
+
+        # 创建所有数据结构
+        Base.metadata.create_all(engine)
+
+        # 将数据库标记为最新版本，而不运行迁移
+        command.stamp(alembic_cfg, "head")
+    else:
+        # 升级数据库
+        upgrade_database(alembic_cfg)
 
     return Session
 
 
 if __name__ == '__main__':
+
+    # 创建一个Rich的Console对象
+    console = Console()
 
     # 配置日志，使用RichHandler
     logging.basicConfig(
