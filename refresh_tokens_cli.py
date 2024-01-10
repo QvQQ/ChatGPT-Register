@@ -60,7 +60,7 @@ if not pandora_next_base_url:
 # ------------------------------------------------------------------------------------
 
 
-@retry(tries=6, delay=1, backoff=2, exceptions=(requests.exceptions.HTTPError, requests.exceptions.Timeout, requests.exceptions.SSLError))
+@retry(tries=6, delay=1, backoff=2, exceptions=(requests.exceptions.HTTPError, requests.exceptions.Timeout, requests.exceptions.SSLError, requests.exceptions.ProxyError))
 def get_access_and_session_token(email, password):
     log.info('Fetching [bold white]access token[/bold white] and [bold white]session token[/bold white]...')
 
@@ -94,7 +94,7 @@ def get_access_and_session_token(email, password):
     return None, None
 
 
-@retry(tries=10, delay=20, backoff=1, exceptions=(requests.exceptions.HTTPError, requests.exceptions.ConnectionError, requests.exceptions.Timeout, requests.exceptions.SSLError))
+@retry(tries=10, delay=20, backoff=1, exceptions=(requests.exceptions.HTTPError, requests.exceptions.ConnectionError, requests.exceptions.Timeout, requests.exceptions.SSLError, requests.exceptions.ProxyError))
 def get_access_and_session_token_ninja(email, password):
     log.info('Fetching [bold white]access token[/bold white] and [bold white]session token[/bold white]...')
 
@@ -137,7 +137,7 @@ def get_access_and_session_token_ninja(email, password):
     return None, None
 
 
-@retry(tries=6, delay=1, backoff=2, exceptions=(requests.exceptions.HTTPError, requests.exceptions.Timeout, requests.exceptions.SSLError))
+@retry(tries=6, delay=1, backoff=2, exceptions=(requests.exceptions.HTTPError, requests.exceptions.Timeout, requests.exceptions.SSLError, requests.exceptions.ProxyError))
 def get_share_token(access_token):
     log.info('Fetching corresponding [bold white]share token[/bold white]...')
 
@@ -175,7 +175,7 @@ def get_share_token(access_token):
     return None
 
 
-@retry(tries=6, delay=1, backoff=2, exceptions=(requests.exceptions.HTTPError, requests.exceptions.Timeout, requests.exceptions.SSLError))
+@retry(tries=6, delay=1, backoff=2, exceptions=(requests.exceptions.HTTPError, requests.exceptions.Timeout, requests.exceptions.SSLError, requests.exceptions.ProxyError))
 def refresh_session_token(session_token):
     log.info('Refreshing current [bold white]session token[/bold white]...')
 
@@ -208,7 +208,7 @@ def refresh_session_token(session_token):
     return None, None
 
 
-@retry(tries=6, delay=1, backoff=2, exceptions=(requests.exceptions.HTTPError, requests.exceptions.Timeout, requests.exceptions.SSLError))
+@retry(tries=6, delay=1, backoff=2, exceptions=(requests.exceptions.HTTPError, requests.exceptions.Timeout, requests.exceptions.SSLError, requests.exceptions.ProxyError))
 def refresh_pool_token(share_tokens):
     log.info(f'Fetching corresponding [bold white]pool token[/bold white] using {len(share_tokens)} share_tokens...')
 
