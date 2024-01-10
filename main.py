@@ -776,6 +776,11 @@ class FunCaptchaSolver:
         }
 
         res = requests.post(url, json=payload)
+        json_content = res.json()
+
+        if 'solution' not in json_content:
+            self.logger.error(f'`solution` not in response! json_content: {json_content}')
+            raise KeyError('solution not found')
 
         self.logger.info(f'Puzzle solved. Solution: {res.json()["solution"]}')
 
