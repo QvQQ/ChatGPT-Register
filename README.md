@@ -70,8 +70,9 @@
 `config_template.yaml` 文件中包含以下配置项：
 
 ```yaml
+
 # 是否使用 headless 模式(Docker 中应该开启，本地可以关闭测试)
-headless_browser: false
+headless_browser: true
 
 # 注册账号的邮箱后缀，包含`@`
 account_postfix: ""
@@ -103,6 +104,9 @@ puzzle_type: "train_coordinates"
 
 
 # For refresher_tokens_cli.py
+
+# ninja 的 baseURL，e.g. http://localhost:7999
+ninja_base_url: ""
 
 # PandoraNext 镜像站的 baseURL
 # 包括proxy_api_prefix，e.g. https://foo.bar/this_is_proxy_api_prefix/
