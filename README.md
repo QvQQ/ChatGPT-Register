@@ -81,8 +81,8 @@ account_postfix: ""
 client_key: ""
 
 # PandoraNext 的镜像站网址
-# 若没有可以使用 https://chat.oaifree.com
-pandora_next_website: "https://chat.oaifree.com"
+# 若没有可以使用 https://chat.oaifree.com（该网站已加CF验证，请部署自己的镜像站！）
+pandora_next_website: ""
 
 # PandoraNext 镜像站的 site_password，如果没有可留空
 site_password: ""

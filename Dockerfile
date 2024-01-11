@@ -35,7 +35,7 @@ ENV LC_ALL zh_CN.UTF-8
 ENV PATH="${PATH}:/home/seluser/.local/bin"
 
 # 复制程序文件到工作目录
-COPY ./main.py ./database.py ./models.py ./configurer.py ./requirements.txt /home/seluser/
+COPY ./main.py ./database.py ./models.py ./configurer.py ./requirements.txt ./alembic.ini ./alembic_scripts /home/seluser/
 
 # 安装 pip 并安装 python 依赖
 RUN sudo chown -R seluser:seluser /home/seluser/.local \
