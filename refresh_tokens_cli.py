@@ -147,7 +147,7 @@ def get_web_access_and_session_token_ninja(email, password):
     if (
         (session_token := json_content.get('session_token')) and
         (access_token := json_content.get('accessToken')) and
-        (session_token_expire_at := datetime.fromisoformat(json_content.get('expires')).replace(tzinfo=None)) and
+        (session_token_expire_at := datetime.fromisoformat(json_content.get('expires').rstrip('Z')).replace(tzinfo=None)) and
         (access_token_expire_at := datetime.utcnow() + timedelta(days=10)) and
         len(session_token) > 0 and
         len(access_token) > 0  # noqa
@@ -239,7 +239,7 @@ def refresh_web_session_token_ninja(session_token):
     if (
             (session_token := json_content.get('session_token')) and
             (access_token := json_content.get('accessToken')) and
-            (session_token_expire_at := datetime.fromisoformat(json_content.get('expires')).replace(tzinfo=None)) and
+            (session_token_expire_at := datetime.fromisoformat(json_content.get('expires').rstrip('Z')).replace(tzinfo=None)) and
             (access_token_expire_at := datetime.utcnow() + timedelta(days=10)) and
             len(session_token) > 0 and
             len(access_token) > 0  # noqa
