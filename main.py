@@ -281,7 +281,7 @@ class Register:
 
         self.logger.info('Verify link submitted.')
 
-    def wait_for_puzzle(self, question_type: str):
+    def wait_for_puzzle(self, question_type: str = None):
 
         self.logger.info('Waiting for puzzle to be solved...')
 
@@ -1041,7 +1041,7 @@ if __name__ == '__main__':
     register.input_username(email.split('@')[0])
 
     # 等待 puzzle 出现并解决
-    register.wait_for_puzzle(question_type=puzzle_type)
+    register.wait_for_puzzle()
 
     # 在数据库中创建账号密码
     register.create_account(email, password)
