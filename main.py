@@ -144,6 +144,9 @@ class Register:
         extension_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'CapSolver.Browser.Extension-chrome')
         extension_config_path = os.path.join(extension_directory, 'assets/config.js')
 
+        # self.logger.info(f'Extension directory: {extension_directory}')
+        self.logger.info(f'Extension config path: [dim]{extension_config_path}[/dim]')
+
         self.replace_api_key(extension_config_path, client_key)
 
         options.add_argument(f'--load-extension={extension_directory}')

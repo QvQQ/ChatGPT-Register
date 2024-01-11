@@ -116,7 +116,9 @@ pandora_next_base_url: ""
 pandora_next_pool_token: ""
 ```
 * **client_key**: 需要使用Capsolver的服务来解决验证码。新注册用户可以获得1刀额度[[点击注册]](https://dashboard.capsolver.com/passport/register?inviteCode=XnJJ1V9nqA0U)（平均每个账号花费1分多RMB）
-* **puzzle_type**: 如果在尝试解决验证码时出错，可以用`./solved`中的验证码图片与[Capsolver Documentation](https://docs.capsolver.com/guide/recognition/FunCaptchaClassification.html)中提供的验证码类型进行对比，并填写相应的`Questions`字段即可。
+* ~~**puzzle_type**: 如果在尝试解决验证码时出错，可以用`./solved`中的验证码图片与[Capsolver Documentation](https://docs.capsolver.com/guide/recognition/FunCaptchaClassification.html)中提供的验证码类型进行对比，并填写相应的`Questions`字段即可。~~
+ 
+  (由于使用了 CapSolver 的浏览器插件自动判断类型，本项已不再需要)
 
 请根据您的需要编辑这些配置项。
 
