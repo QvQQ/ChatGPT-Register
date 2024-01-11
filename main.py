@@ -81,15 +81,14 @@ IMAP_port = config.get('IMAP_port', 993)
 email_username = config.get('email_username')
 email_password = config.get('email_password')
 email_folder = config.get('email_folder', 'Inbox')
-puzzle_type = config.get('puzzle_type', 'train_coordinates')  # 有多种类型，可在 capsolver 网站查看
+# puzzle_type = config.get('puzzle_type', 'train_coordinates')  # 有多种类型，可在 capsolver 网站查看
 
 if account_postfix and not account_postfix.startswith('@'):
     account_postfix = '@' + account_postfix
 
 # 检查配置
 if not all(
-        [account_postfix, client_key, pandora_next_website, IMAP_server, email_username, email_password, email_folder,
-         puzzle_type]):
+        [account_postfix, client_key, pandora_next_website, IMAP_server, email_username, email_password, email_folder]):
     log.critical('Please review your environment variable configurations!')
     exit(-1)
 # ------------------------------------------------------------------------------------
@@ -140,8 +139,14 @@ class Register:
         # chrome启动参数
         options = uc.ChromeOptions()
 
-        options.add_argument('--incognito')
+        # options.add_argument('--incognito')
         # options.add_argument(f'--user-data-dir=./chatgpt_register')
+        extension_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'CapSolver.Browser.Extension-chrome')
+        extension_config_path = os.path.join(extension_directory, 'assets/config.js')
+
+        self.replace_api_key(extension_config_path, client_key)
+
+        options.add_argument(f'--load-extension={extension_directory}')
         options.add_argument(f'--app={pandora_next_website}')
 
         self.logger.info('Loading undetected Chrome')
@@ -175,6 +180,28 @@ class Register:
 
         self.logger.info('Loaded Undetected chrome')
         self.logger.info('Ready!')
+
+    def replace_api_key(self, config_path, new_api_key):
+        # 读取文件内容
+        try:
+            with open(config_path, 'r', encoding='utf-8') as file:
+                content = file.read()
+
+            # 使用正则表达式替换apiKey
+            new_content = re.sub(r"apiKey:\s*'.*?',", f"apiKey: '{new_api_key}',", content)
+
+            # 将新内容写回文件
+            with open(config_path, 'w', encoding='utf-8') as file:
+                file.write(new_content)
+
+            self.logger.info("API key has been successfully replaced.")
+
+        except FileNotFoundError:
+            self.logger.error(f"The file was not found: {config_path}")
+            raise
+        except Exception as e:
+            self.logger.error(f"An error occurred: {e}")
+            raise
 
     def pass_site_password(self, site_password):
         self.logger.info('Checking if site password exists...')
@@ -258,9 +285,13 @@ class Register:
 
         self.logger.info('Waiting for puzzle to be solved...')
 
-        self.solver.solve(question_type)
+        #self.solver.solve(question_type)
 
-        self.helper.wait_until_appear(By.XPATH, self.xpath_sign_up_successful, timeout_duration=600)
+        try:
+            self.helper.wait_until_appear(By.XPATH, self.xpath_sign_up_successful, timeout_duration=120)
+        except Exceptions.TimeoutException as e:
+            self.logger.error('[bold red]Solve failed within 120s! Please check if you have enough balance.[/bold red]')
+            raise
 
         self.logger.info('Puzzle solved!')
         self.logger.info('Looking for login link to click...')
@@ -320,9 +351,12 @@ class Register:
         self.logger.info('Passing tutorial...')
 
         # 跳过引导（如果有的话）
-        ok_lets_go = self.helper.sleepy_find_element(By.XPATH, self.xpath_ok_lets_go)
-        ok_lets_go.click()
-        self.logger.info('Passed "Okay, let\'s go".')
+        ok_lets_go = self.helper.sleepy_find_element(By.XPATH, self.xpath_ok_lets_go, attempt_count=3, fial_ok=True)
+        if ok_lets_go:
+            ok_lets_go.click()
+            self.logger.info('Passed "Okay, let\'s go".')
+        else:
+            self.logger.info('"Okay, let\'s go" does not appear. Skipped.')
 
         # get_started = self.helper.sleepy_find_element(By.XPATH, self.xpath_get_started)
         # get_started.click()
@@ -344,10 +378,10 @@ class Register:
         text_area.send_keys(Keys.SHIFT + Keys.ENTER); time.sleep(1.5);  # noqa
 
         # 等待发送按钮出现
-        self.logger.info('Step.5 Waiting for send button to appear.')
+        self.logger.info('Step.5 Waiting for send button to appear...')
         self.helper.wait_until_disappear(By.XPATH, self.xpath_send_button_disabled); time.sleep(1);  # noqa
         text_area.send_keys(Keys.COMMAND + Keys.RETURN)
-        self.logger.info('Step.6 Message sent, waiting for response')
+        self.logger.info('Step.6 Message sent, waiting for response...')
 
         # 检查返回值
         pass

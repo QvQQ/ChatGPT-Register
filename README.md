@@ -18,7 +18,7 @@
 
 ## 特点
 
-- 🚀 **自动化注册**：自动完成整个ChatGPT账号注册流程，使用`Capsolver`来绕过注册中的验证码。
+- 🚀 **自动化注册**：自动完成整个ChatGPT账号注册流程，使用`Capsolver`来绕过注册中的验证码，无需判断验证码类型。
 - 🌐 **免代理**：不用代理池、注册再多也不被ban本机IP。（感谢`PandoraNext`项目的贡献）
 - 📧 **邮箱监控**：自动监控和处理OpenAI的`Verification`认证邮件。
 - 🐍 **Python脚本**：使用`Python`和`selenium`自动操作，并使用`undetected_chromedriver`防止检测。
@@ -100,7 +100,7 @@ email_folder: "Inbox"
 
 # ChatGPT 使用的 FunCaptcha 的类型
 # 不定期会改变，可以到 Capsovler 网站查看对应类型
-puzzle_type: "train_coordinates"
+# puzzle_type: "train_coordinates"  # 由于使用了 CapSolver 的浏览器插件自动判断类型，本项已不再需要
 
 
 # For refresher_tokens_cli.py

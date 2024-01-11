@@ -28,7 +28,7 @@ email_folder: "Inbox"
 
 # ChatGPT 使用的 FunCaptcha 的类型
 # 不定期会改变，可以到 Capsovler 网站查看对应类型
-puzzle_type: "train_coordinates"
+# puzzle_type: "train_coordinates"  # 由于使用了 CapSolver 的浏览器插件自动判断类型，本项已不再需要
 
 
 # For refresher_tokens_cli.py
