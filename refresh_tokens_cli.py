@@ -915,29 +915,38 @@ def obtain(ninja: bool = typer.Option(False, help='Use ninja as backend. Default
             log.error(f'[bold red]Please set pandora_next_base_url in your configuration file![/bold red]')
             exit(-1)
 
-    match type:
-        case 'web':
-            log.info("[green]Obtaining [bold green]WEB[/bold green] session token and refresh all tokens...[/green]")
+    if type == 'web':
+        log.info("[green]Obtaining [bold green]WEB[/bold green] session token and refresh all tokens...[/green]")
 
-            refresh_web_tokens(
-                use_ninja=ninja,
-                count=count,
-                conditions=[
-                    Account.web_session_token.is_(None)
-                ]
-            )
-        case 'platform':
-            log.info("[green]Obtaining [bold green]PLATFORM[/bold green] refresh/access tokens and sess key...[/green]")
+        refresh_web_tokens(
+            use_ninja=ninja,
+            count=count,
+            conditions=[
+                # session token 为空或 已过期
+                or_(
+                    Account.web_session_token.is_(None),
+                    Account.web_session_token_expire_at.is_(None),
+                    Account.web_session_token_expire_at < datetime.utcnow()
+                )
+            ]
+        )
+    elif type == 'platform':
+        log.info("[green]Obtaining [bold green]PLATFORM[/bold green] refresh/access tokens and sess key...[/green]")
 
-            refresh_platform_tokens(
-                use_ninja=ninja,
-                count=count,
-                conditions=[
-                    Account.platform_refresh_token.is_(None)
-                ]
-            )
-        case _:
-            log.error("[red]Wrong [bold red]type[/bold red]! Choose one from web/platform![/red]")
+        refresh_platform_tokens(
+            use_ninja=ninja,
+            count=count,
+            conditions=[
+                # refresh token 为空或 已过期
+                or_(
+                    Account.platform_refresh_token.is_(None),
+                    Account.platform_refresh_token_expire_at.is_(None),
+                    Account.platform_refresh_token_expire_at < datetime.utcnow(),
+                )
+            ]
+        )
+    else:
+        log.error("[red]Wrong [bold red]type[/bold red]! Choose one from web/platform![/red]")
 
 
 @app.command(help='Refresh tokens.')
@@ -958,42 +967,49 @@ def refresh(ninja: bool = typer.Option(False, help='Use ninja as backend. Defaul
 
     log.info(f"[bold green]Refreshing tokens for {count if count != -1 else 'ALL'} accounts that [bold red]expire within {remaining} days[/bold red].[/bold green]")
 
-    # 计算当前 UTC 时间减去 10 天的时间
-    N_days_ago = datetime.utcnow() - timedelta(days=remaining)
+    # 计算当前 UTC 时间后 N 天的时间
+    N_days_after = datetime.utcnow() + timedelta(days=remaining)
 
-    match type:
-        case 'web':
-            log.info("[green]Refreshing existed [bold green]WEB[/bold green] session, share and access tokens.[/green]")
+    if type == 'web':
+        log.info("[green]Refreshing existed [bold green]WEB[/bold green] session, share and access tokens.[/green]")
 
-            refresh_web_tokens(
-                use_ninja=ninja,
-                count=count,
-                conditions=[
-                    Account.web_session_token.is_not(None),
-                    or_(
-                        Account.web_access_token_expire_at >= N_days_ago,
-                        Account.web_access_token_expire_at.is_(None)
-                    ),
-                    Account.pandora_share_token.is_(None) if empty_only else True
-                ]
-            )
-        case 'platform':
-            log.info("[green]Refreshing existed [bold green]PLATFORM[/bold green] refresh/access tokens.[/green]")
+        refresh_web_tokens(
+            use_ninja=ninja,
+            count=count,
+            conditions=[
+                # session token 有效
+                Account.web_session_token.is_not(None),
+                Account.web_session_token_expire_at > datetime.utcnow(),
+                # access token 临近过期
+                or_(
+                    Account.web_access_token_expire_at <= N_days_after,
+                    Account.web_access_token_expire_at.is_(None)
+                ),
+                # 是否只刷新空的 share token
+                Account.pandora_share_token.is_(None) if empty_only else True,
+            ]
+        )
+    elif type == 'platform':
+        log.info("[green]Refreshing existed [bold green]PLATFORM[/bold green] refresh/access tokens.[/green]")
 
-            refresh_platform_tokens(
-                use_ninja=ninja,
-                count=count,
-                conditions=[
-                    Account.platform_refresh_token.is_not(None),
-                    or_(
-                        Account.platform_access_token_expire_at >= N_days_ago,
-                        Account.platform_access_token_expire_at.is_(None)
-                    ),
-                    Account.platform_sess_key.is_(None) if empty_only else True
-                ]
-            )
-        case _:
-            log.error("[bold red]Wrong type! Choose one from web/platform![/bold red]")
+        refresh_platform_tokens(
+            use_ninja=ninja,
+            count=count,
+            conditions=[
+                # refresh token 有效
+                Account.platform_refresh_token.is_not(None),
+                Account.platform_refresh_token_expire_at > datetime.utcnow(),
+                # access token 临近过期
+                or_(
+                    Account.platform_access_token_expire_at <= N_days_after,
+                    Account.platform_access_token_expire_at.is_(None)
+                ),
+                # 是否只刷新空的 sess key
+                Account.platform_sess_key.is_(None) if empty_only else True,
+            ]
+        )
+    else:
+        log.error("[bold red]Wrong type! Choose one from web/platform![/bold red]")
 
 
 @app.command(help='Assemble pool token')
