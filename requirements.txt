@@ -10,3 +10,4 @@ sshtunnel
 typer
 pillow
 alembic
+filelock

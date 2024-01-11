@@ -50,6 +50,9 @@ from PIL import Image
 import io
 from typing import Tuple
 
+# from extension config file lock
+from filelock import Timeout, FileLock
+
 # ------------------------------------------------------------------------------------
 # 创建一个Rich的Console对象
 console = Console()
@@ -142,13 +145,14 @@ class Register:
         # options.add_argument('--incognito')
         # options.add_argument(f'--user-data-dir=./chatgpt_register')
         extension_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'CapSolver.Browser.Extension-chrome')
-        extension_config_path = os.path.join(extension_directory, 'assets/config.js')
+        extension_config_path = os.path.join(extension_directory, 'assets', 'config.js')
 
         # self.logger.info(f'Extension directory: {extension_directory}')
         self.logger.info(f'Extension config path: [dim]{extension_config_path}[/dim]')
 
         self.replace_api_key(extension_config_path, client_key)
 
+        # options.add_extension(extension_directory)
         options.add_argument(f'--load-extension={extension_directory}')
         options.add_argument(f'--app={pandora_next_website}')
 
@@ -185,20 +189,37 @@ class Register:
         self.logger.info('Ready!')
 
     def replace_api_key(self, config_path, new_api_key):
-        # 读取文件内容
+
+        # 在程序运行目录创建锁文件
+        lock_path = os.path.abspath(".file_lock")
+    
+        # 创建一个文件锁
+        lock = FileLock(lock_path, timeout=1)
+    
         try:
-            with open(config_path, 'r', encoding='utf-8') as file:
-                content = file.read()
-
-            # 使用正则表达式替换apiKey
-            new_content = re.sub(r"apiKey:\s*'.*?',", f"apiKey: '{new_api_key}',", content)
-
-            # 将新内容写回文件
-            with open(config_path, 'w', encoding='utf-8') as file:
-                file.write(new_content)
-
-            self.logger.info("API key has been successfully replaced.")
-
+            with lock:
+                with open(config_path, 'r', encoding='utf-8') as file:
+                    content = file.read()
+    
+                current_api_key_match = re.search(r"apiKey:\s*'(.+?)',", content)
+                if current_api_key_match:
+                    current_api_key = current_api_key_match.group(1)
+                    if current_api_key != new_api_key:
+                        new_content = re.sub(r"apiKey:\s*'.+?',", f"apiKey: '{new_api_key}',", content)
+                        with open(config_path, 'w', encoding='utf-8') as file:
+                            file.write(new_content)
+    
+                        self.logger.info("API key has been successfully replaced.")
+                    else:
+                        self.logger.info("The new API key is the same as the current one. No replacement made.")
+                else:
+                    self.logger.error("No existing API key found in the file.")
+    
+        except Timeout:
+            # 如果锁被其他进程占用，则记录警告信息
+            self.logger.warning("Lock acquisition failed. Another instance might be modifying the file.")
+            # 直接pass，不进行后续操作
+            pass
         except FileNotFoundError:
             self.logger.error(f"The file was not found: {config_path}")
             raise
