@@ -351,7 +351,7 @@ class Register:
         self.logger.info('Passing tutorial...')
 
         # 跳过引导（如果有的话）
-        ok_lets_go = self.helper.sleepy_find_element(By.XPATH, self.xpath_ok_lets_go, attempt_count=3, fial_ok=True)
+        ok_lets_go = self.helper.sleepy_find_element(By.XPATH, self.xpath_ok_lets_go, attempt_count=3, fail_ok=True)
         if ok_lets_go:
             ok_lets_go.click()
             self.logger.info('Passed "Okay, let\'s go".')
