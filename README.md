@@ -8,7 +8,7 @@
 
 <br/>
 
-**ChatGPT-Register** 是一个自动化工具，**免代理**、**不封号**、**无限量**、**无人工干预**地注册 ChatGPT 账号。
+**ChatGPT-Register** 是一个自动化工具，**免代理**、**不封号**、~~**无限量**~~（受限于`PandoraNext`额度）、**无人工干预**地注册 ChatGPT 账号。
 
 同时可获取、刷新、维护各类**Token**（包括`sess key`）。一键刷新将过期的Token们！
 
@@ -53,9 +53,11 @@
 ### 方法二：使用Docker Compose
 1. 在项目根目录下运行：
    ```bash
+   touch account.db  # 创建数据库文件，防止映射失败
    docker compose up
    ```
     PS. 由于使用了 Selenium 来模拟请求，对主机配置有较高要求。如果报错，可以尝试延长程序中寻找元素的等待时间。
+    PPS. 由于docker会将不存在的文件默认映射为文件夹，因此需要在项目中先`touch accound.db`才可正常映射。
 
 2. （可选）要查看容器内部的情况，请访问容器内置的 `noVNC` 服务
    http://localhost:7900/?autoconnect=1&resize=scale&password=secret
