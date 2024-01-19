@@ -57,6 +57,7 @@ ninja_base_url = config.get('ninja_base_url', '')
 pandora_next_base_url = config.get('pandora_next_base_url', '')
 pandora_next_pool_token = config.get('pandora_next_pool_token', '')
 
+
 # ------------------------------------------------------------------------------------
 # 获取 web 的 access_token 与 session_token
 @retry(tries=6, delay=1, backoff=2, exceptions=(requests.exceptions.HTTPError, requests.exceptions.Timeout, requests.exceptions.SSLError, requests.exceptions.ProxyError))
@@ -99,6 +100,7 @@ def get_web_access_and_session_token_pandora(email, password):
         log.error(json_content)
 
     return None, None, None, None
+
 
 @retry(tries=6, delay=1, backoff=2, exceptions=(requests.exceptions.HTTPError, requests.exceptions.ConnectionError, requests.exceptions.Timeout, requests.exceptions.SSLError, requests.exceptions.ProxyError))
 def get_web_access_and_session_token_ninja(email, password):
@@ -160,6 +162,7 @@ def get_web_access_and_session_token_ninja(email, password):
 
     return None, None, None, None
 
+
 # ------------------------------------------------------------------------------------
 # 刷新 web 的 access_token 与 session_token
 @retry(tries=6, delay=1, backoff=2, exceptions=(requests.exceptions.HTTPError, requests.exceptions.Timeout, requests.exceptions.SSLError, requests.exceptions.ProxyError))
@@ -202,6 +205,7 @@ def refresh_web_session_token_pandora(session_token):
         log.error(json_content)
 
     return None, None, None, None
+
 
 @retry(tries=6, delay=1, backoff=2, exceptions=(requests.exceptions.HTTPError, requests.exceptions.Timeout, requests.exceptions.SSLError, requests.exceptions.ProxyError))
 def refresh_web_session_token_ninja(session_token):
@@ -251,6 +255,7 @@ def refresh_web_session_token_ninja(session_token):
         log.error(json_content)
 
     return None, None, None, None
+
 
 # ------------------------------------------------------------------------------------
 # 获取 platform 的 access_token 与 refresh_token
@@ -362,7 +367,16 @@ def get_platform_access_and_refresh_token_and_sess_key_pandora(email, password):
 
     return None, None, None, None, None
 
-@retry(tries=6, delay=1, backoff=2, exceptions=(requests.exceptions.HTTPError, requests.exceptions.Timeout, requests.exceptions.SSLError, requests.exceptions.ProxyError))
+
+@retry(
+    tries=6, delay=1, backoff=2, exceptions=(
+        requests.exceptions.HTTPError,
+        requests.exceptions.Timeout,
+        requests.exceptions.SSLError,
+        requests.exceptions.ProxyError,
+        requests.exceptions.ConnectionError
+    )
+)
 def get_platform_access_and_refresh_token_ninja(email, password):
     # {
     #     "access_token": "eyJhbGciOiJSU...",
@@ -410,9 +424,18 @@ def get_platform_access_and_refresh_token_ninja(email, password):
 
     return None, None, None, None
 
+
 # ------------------------------------------------------------------------------------
 # 刷新 platform 的 access_token 与 refresh_token
-@retry(tries=6, delay=1, backoff=2, exceptions=(requests.exceptions.HTTPError, requests.exceptions.Timeout, requests.exceptions.SSLError, requests.exceptions.ProxyError))
+@retry(
+    tries=6, delay=1, backoff=2, exceptions=(
+        requests.exceptions.HTTPError,
+        requests.exceptions.Timeout,
+        requests.exceptions.SSLError,
+        requests.exceptions.ProxyError,
+        requests.exceptions.ConnectionError
+    )
+)
 def refresh_platform_refresh_token_pandora(refresh_token):
     # {
     #     "access_token": "eyJhbGciOiJSUzxxxx",
@@ -460,7 +483,15 @@ def refresh_platform_refresh_token_pandora(refresh_token):
 
     return None, None, None, None
 
-@retry(tries=6, delay=1, backoff=2, exceptions=(requests.exceptions.HTTPError, requests.exceptions.Timeout, requests.exceptions.SSLError, requests.exceptions.ProxyError))
+@retry(
+    tries=6, delay=1, backoff=2, exceptions=(
+        requests.exceptions.HTTPError,
+        requests.exceptions.Timeout,
+        requests.exceptions.SSLError,
+        requests.exceptions.ProxyError,
+        requests.exceptions.ConnectionError
+    )
+)
 def refresh_platform_refresh_token_ninja(refresh_token):
     # {
     #     "access_token": "eyJhbGciOiJSU...",
@@ -502,13 +533,32 @@ def refresh_platform_refresh_token_ninja(refresh_token):
 
     return None, None, None, None
 
+
 # ------------------------------------------------------------------------------------
 # 获取 platform 的 sess key
-@retry(tries=6, delay=1, backoff=2, exceptions=(requests.exceptions.HTTPError, requests.exceptions.Timeout, requests.exceptions.SSLError, requests.exceptions.ProxyError))
+@retry(
+    tries=6, delay=1, backoff=2, exceptions=(
+        requests.exceptions.HTTPError,
+        requests.exceptions.Timeout,
+        requests.exceptions.SSLError,
+        requests.exceptions.ProxyError,
+        requests.exceptions.ConnectionError
+    )
+)
 def get_platform_sess_key_pandora_(email, password):
 
     raise NotImplemented('get_platform_sess_key_pandora')
-@retry(tries=6, delay=1, backoff=2, exceptions=(requests.exceptions.HTTPError, requests.exceptions.Timeout, requests.exceptions.SSLError, requests.exceptions.ProxyError))
+
+
+@retry(
+    tries=6, delay=1, backoff=2, exceptions=(
+        requests.exceptions.HTTPError,
+        requests.exceptions.Timeout,
+        requests.exceptions.SSLError,
+        requests.exceptions.ProxyError,
+        requests.exceptions.ConnectionError,
+    )
+)
 def get_platform_sess_key_ninja(access_token):
     # {
     #     "object": "login",
@@ -560,9 +610,18 @@ def get_platform_sess_key_ninja(access_token):
 
     return None
 
+
 # ------------------------------------------------------------------------------------
 # 获取 PandoraNext 的 share_token 与 pool_token
-@retry(tries=6, delay=1, backoff=2, exceptions=(requests.exceptions.HTTPError, requests.exceptions.Timeout, requests.exceptions.SSLError, requests.exceptions.ProxyError))
+@retry(
+    tries=6, delay=1, backoff=2, exceptions=(
+        requests.exceptions.HTTPError,
+        requests.exceptions.Timeout,
+        requests.exceptions.SSLError,
+        requests.exceptions.ProxyError,
+        requests.exceptions.ConnectionError
+    )
+)
 def get_pandora_share_token(access_token):
     log.info('Fetching corresponding [bold white]share token[/bold white]...')
 
@@ -599,7 +658,16 @@ def get_pandora_share_token(access_token):
 
     return None
 
-@retry(tries=6, delay=1, backoff=2, exceptions=(requests.exceptions.HTTPError, requests.exceptions.Timeout, requests.exceptions.SSLError, requests.exceptions.ProxyError))
+
+@retry(
+    tries=6, delay=1, backoff=2, exceptions=(
+        requests.exceptions.HTTPError,
+        requests.exceptions.Timeout,
+        requests.exceptions.SSLError,
+        requests.exceptions.ProxyError,
+        requests.exceptions.ConnectionError
+    )
+)
 def refresh_pandora_pool_token(share_tokens):
     log.info(f'Fetching corresponding [bold white]pool token[/bold white] using {len(share_tokens)} share_tokens...')
 
@@ -635,6 +703,7 @@ def refresh_pandora_pool_token(share_tokens):
         log.error(json_content)
 
     return None
+
 
 # ------------------------------------------------------------------------------------
 # 检索数据库进行 web tokens 的获取与刷新
@@ -741,6 +810,7 @@ def refresh_web_tokens(use_ninja: bool, count: int, conditions: List[BinaryExpre
                     log.info('`use_ninja` == True, 跳过 pandora_share_token 的获取...')
 
         log.warning('[bold green]未找到更多符合条件的记录！已全部处理完毕。[/bold green]')
+
 
 # ------------------------------------------------------------------------------------
 # 检索数据库进行 platform tokens 的获取与刷新
@@ -857,6 +927,7 @@ def refresh_platform_tokens(use_ninja: bool, count: int, conditions: List[Binary
                     log.info(f'[bold red]!!! 此处应当按照错误情况进行处理 !!![/bold red]')
 
         log.warning('[bold green]未找到更多符合条件的记录！已全部处理完毕。[/bold green]')
+
 
 def assemble_pool_token(count: int):
 
