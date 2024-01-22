@@ -16,6 +16,9 @@
 
 完全模拟整个注册流程，在安全无风险的基础上，单个实例注册用时仅需 2min！且多开情况下，每个实例互不影响。
 
+<img width="783" alt="image" src="https://github.com/QvQQ/ChatGPT-Register/assets/35735975/2ca0b8cc-c276-4a6f-8436-b423ebebda30">
+
+
 ## 特点
 
 - 🚀 **自动化注册**：自动完成整个ChatGPT账号注册流程，使用`Capsolver`来绕过注册中的验证码，无需判断验证码类型。
